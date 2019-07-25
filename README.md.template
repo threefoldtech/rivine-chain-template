@@ -3,31 +3,31 @@
 The {{ .Blockchain.Name }} Blockchain repository.
 
 ## How to use {{ .Blockchain.Binaries.Client }}
-{{$dv := .Blockchain}}{{ with index .Blockchain.Network "devnet" }}
+{{$bc := .Blockchain}}{{ with index .Blockchain.Network "devnet" }}
 ### devnet
 
 You can run the chain easily on your computer to play with the software already.
 
 First step is to launch a daemon from your console:
 ```
-{{ $dv.Binaries.Daemon }} --network devnet --no-bootstrap -Mgctwbe
+{{ $bc.Binaries.Daemon }} --network devnet --no-bootstrap -Mgctwbe
 ```
 
-the above launches a {{ $dv.Name }} daemon on devnet, using no bootstrap
+the above launches a {{ $bc.Name }} daemon on devnet, using no bootstrap
 (meaning it doesn't try to connect to bootstrap nodes or wait for such nodes to know if you're sync or not),
 enabling also the explorer module.
 
 Once you have that you can recover the genesis wallet so you can start creating blocks and have money to spend:
 
 ```
-{{ $dv.Binaries.Client }} wallet recover --plain \
+{{ $bc.Binaries.Client }} wallet recover --plain \
     --seed "carbon boss inject cover mountain fetch fiber fit tornado cloth wing dinosaur proof joy intact fabric thumb rebel borrow poet chair network expire else"
 ```
 
 As this wallet is recovered as a plain wallet it does not have to be unlocked and is ready for use:
 
 ```
-$ {{ $dv.Binaries.Client }} wallet
+$ {{ $bc.Binaries.Client }} wallet
 Wallet status:
 Encrypted, Unlocked
 Confirmed Balance:   100006530 GFT

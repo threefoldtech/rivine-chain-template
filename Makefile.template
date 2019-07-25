@@ -1,7 +1,7 @@
 all: install
 
-daemonpkgs = ./cmd/{{ chain.binaries.daemon }}
-clientpkgs = ./cmd/{{ chain.binaries.client }}
+daemonpkgs = ./cmd/{{.Blockchain.Binaries.Daemon}}
+clientpkgs = ./cmd/{{.Blockchain.Binaries.Client}}
 pkgs = $(daemonpkgs) $(clientpkgs)
 
 version = $(shell git describe --abbrev=0 || echo 'v0.1')
@@ -14,12 +14,12 @@ else
 	fullversionpath = \/tree\/$(commit)
 endif
 
-configpkg = {{ chain.repository }}/pkg/config
+configpkg = {{.Blockchain.Repository}}/pkg/config
 ldflagsversion = -X $(configpkg).rawVersion=$(fullversion)
 
 stdoutput = $(GOPATH)/bin
-daemonbin = $(stdoutput)/{{ chain.binaries.daemon }}
-clientbin = $(stdoutput)/{{ chain.binaries.client }}
+daemonbin = $(stdoutput)/{{.Blockchain.Binaries.Daemon}}
+clientbin = $(stdoutput)/{{.Blockchain.Binaries.Client}}
 
 test: fmt vet
 
@@ -43,3 +43,4 @@ install-std:
 	go build -ldflags '$(ldflagsversion)' -o $(clientbin) $(clientpkgs)
 
 .PHONY: all test fmt vet install install-std
+ vet install install-std

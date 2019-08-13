@@ -12,7 +12,7 @@ type ExtendedDaemonConfig struct {
 // DefaultConfig returns the default daemon configuration
 func DefaultConfig() daemon.Config {
 	cfg := daemon.DefaultConfig()
-	cfg.APIaddr = "localhost:<UNDEFINED>" // TODO: define API port
-	cfg.RPCaddr = ":<UNDEFINED>"          // TODO: define RPC port
+	cfg.APIaddr = "localhost:<UNDEFINED>"
+	cfg.RPCaddr = ":<UNDEFINED>"
 	return cfg
 }

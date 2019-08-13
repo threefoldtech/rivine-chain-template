@@ -161,7 +161,7 @@ func GetTestnetGenesis() types.ChainConstants {
   {{ with index .Blockchain.Network "testnet" }}
   	// Start with 100M coins
     cfg.GenesisCoinDistribution = []types.CoinOutput{
-      {{ range .Genesis.CoinOutput }}
+      {{ range .Genesis.CoinOutputs }}
         {
           // Create 100M coins
           Value: cfg.CurrencyUnits.OneCoin.Mul64({{ .Value }}),

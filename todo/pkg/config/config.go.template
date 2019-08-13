@@ -107,7 +107,7 @@ func GetStandardnetGenesis() types.ChainConstants {
         // TODO
         Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{.Condition}}"))),
       },
-      {{ end }}
+      {{ end }}
     }
   {{ end }}
 

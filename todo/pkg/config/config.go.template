@@ -254,7 +254,7 @@ func GetStandardnetBootstrapPeers() []modules.NetAddress {
 	return []modules.NetAddress{
       {{ with index .Blockchain.Network "standard" }}
         {{ range .BootstrapPeers }}
-          {{ .BootstrapPeer }},
+          {{ . }},
         {{ end }}
       {{ end }}
 	}
@@ -265,7 +265,7 @@ func GetTestnetBootstrapPeers() []modules.NetAddress {
 	return []modules.NetAddress{
 		{{ with index .Blockchain.Network "testnet" }}
       {{ range .BootstrapPeers }}
-        {{ .BootstrapPeer }},
+        {{ . }},
       {{ end }}
     {{ end }}
 	}

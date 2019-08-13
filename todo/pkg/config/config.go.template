@@ -159,13 +159,10 @@ func GetTestnetGenesis() types.ChainConstants {
 
 	// allocate block stakes
   {{ with index .Blockchain.Network "testnet" }}
-  	// Start with 100M coins
     cfg.GenesisCoinDistribution = []types.CoinOutput{
       {{ range .Genesis.CoinOutputs }}
         {
-          // Create 100M coins
           Value: cfg.CurrencyUnits.OneCoin.Mul64({{ .Value }}),
-          // TODO
           Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{ .Condition }}"))),
         },
       {{ end }}
@@ -174,9 +171,7 @@ func GetTestnetGenesis() types.ChainConstants {
     cfg.GenesisBlockStakeAllocation = []types.BlockStakeOutput{
       {{ range .Genesis.BlockStakeOutputs }}
       {
-        // 100 BS,
         Value:     types.NewCurrency64({{ .Value }}),
-        // TODO
         Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{ .Condition }}"))),
       },
       {{ end }}
@@ -259,7 +254,7 @@ func GetStandardnetBootstrapPeers() []modules.NetAddress {
 	return []modules.NetAddress{
       {{ with index .Blockchain.Network "standard" }}
         {{ range .BootstrapPeers }}
-          {{ .NetAddress }},
+          {{ .BootstrapPeer }},
         {{ end }}
       {{ end }}
 	}
@@ -268,9 +263,9 @@ func GetStandardnetBootstrapPeers() []modules.NetAddress {
 // GetTestnetBootstrapPeers sets the testnet bootstrap node addresses
 func GetTestnetBootstrapPeers() []modules.NetAddress {
 	return []modules.NetAddress{
-		{{ with index .Blockchain.Network "standard" }}
+		{{ with index .Blockchain.Network "testnet" }}
       {{ range .BootstrapPeers }}
-        {{ .NetAddress }},
+        {{ .BootstrapPeer }},
       {{ end }}
     {{ end }}
 	}

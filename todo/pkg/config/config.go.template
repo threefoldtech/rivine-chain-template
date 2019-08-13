@@ -68,7 +68,7 @@ func GetStandardnetGenesis() types.ChainConstants {
   {{ with index .Blockchain.Network "standard" }}
   cfg.GenesisTimestamp = types.Timestamp({{.Genesis.GenesisBlockTimestamp}})
   {{ end }}
-	
+
 
 	// 1000 block window for difficulty
 	cfg.TargetWindow = 1e3
@@ -169,7 +169,7 @@ func GetTestnetGenesis() types.ChainConstants {
         },
       {{ end }}
     }
-  
+
     cfg.GenesisBlockStakeAllocation = []types.BlockStakeOutput{
       {{ range .Genesis.BlockStakeOutputs }}
       {

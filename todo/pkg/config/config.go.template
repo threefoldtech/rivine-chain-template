@@ -100,7 +100,7 @@ func GetStandardnetGenesis() types.ChainConstants {
 	// allocate block stakes
   {{ with index .Blockchain.Network "standard" }}
     cfg.GenesisBlockStakeAllocation = []types.BlockStakeOutput{
-      {{ range {{.Genesis.BlockStakeOutputs}}}}
+      {{ range .Genesis.BlockStakeOutputs }}
       {
         // 100 BS,
         Value:     types.NewCurrency64({{.Value}}),

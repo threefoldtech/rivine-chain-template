@@ -22,20 +22,20 @@ func RegisterDevnetTransactions(cli *client.CommandLineClient) {
 }
 
 func registerTransactions(cli *client.CommandLineClient) {
-  {{if .Blockchain.Transactions.Minting.ConditionUpdate}}// create minting plugin client...
+  {{if .Blockchain.Transactions.Minting}}{{if .Blockchain.Transactions.Minting.ConditionUpdate}}// create minting plugin client...
   mintingCLI := mintingcli.NewPluginConsensusClient(cli)
   // ...and register minting types
   types.RegisterTransactionVersion(gctypes.MinterDefinitionTxVersion, minting.MinterDefinitionTransactionController{
     MintConditionGetter: mintingCLI,
     TransactionVersion:  gctypes.MinterDefinitionTxVersion,
-  }){{end}}
-  {{if .Blockchain.Transactions.Minting.CoinCreation}}
+  }){{end}}{{end}}
+  {{if .Blockchain.Transactions.Minting}}{{if .Blockchain.Transactions.Minting.CoinCreation}}
   types.RegisterTransactionVersion(gctypes.CoinCreationTxVersion, minting.CoinCreationTransactionController{
     MintConditionGetter: mintingCLI,
     TransactionVersion:  gctypes.CoinCreationTxVersion,
-  }){{end}}
-  {{if .Blockchain.Transactions.Minting.CoinDestruction}}
+  }){{end}}{{end}}
+  {{if .Blockchain.Transactions.Minting}}{{if .Blockchain.Transactions.Minting.CoinDestruction}}
 	types.RegisterTransactionVersion(gctypes.CoinDestructionTxVersion, minting.CoinDestructionTransactionController{
 		TransactionVersion: gctypes.CoinDestructionTxVersion,
-	}){{end}}
+	}){{end}}{{end}}
 }

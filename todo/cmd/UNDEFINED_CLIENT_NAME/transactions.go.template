@@ -1,0 +1,41 @@
+package main
+
+import (
+	"github.com/threefoldtech/rivine/extensions/minting"
+	"github.com/threefoldtech/rivine/pkg/client"
+	"github.com/threefoldtech/rivine/types"
+)
+
+// RegisterStandardTransactions registers the {{.Blockchain.Name}}-specific transactions as required for the standard network.
+func RegisterStandardTransactions(cli *client.CommandLineClient) {
+	registerTransactions(cli)
+}
+
+// RegisterTestnetTransactions registers the {{.Blockchain.Name}}-specific transactions as required for the test network.
+func RegisterTestnetTransactions(cli *client.CommandLineClient) {
+	registerTransactions(cli)
+}
+
+// RegisterDevnetTransactions registers the {{.Blockchain.Name}}-specific transactions as required for the dev network.
+func RegisterDevnetTransactions(cli *client.CommandLineClient) {
+	registerTransactions(cli)
+}
+
+func registerTransactions(cli *client.CommandLineClient) {
+  {{if .Blockchain.Transactions.Minting.ConditionUpdate}}// create minting plugin client...
+  mintingCLI := mintingcli.NewPluginConsensusClient(cli)
+  // ...and register minting types
+  types.RegisterTransactionVersion(gctypes.MinterDefinitionTxVersion, minting.MinterDefinitionTransactionController{
+    MintConditionGetter: mintingCLI,
+    TransactionVersion:  gctypes.MinterDefinitionTxVersion,
+  }){{end}}
+  {{if .Blockchain.Transactions.Minting.CoinCreation}}
+  types.RegisterTransactionVersion(gctypes.CoinCreationTxVersion, minting.CoinCreationTransactionController{
+    MintConditionGetter: mintingCLI,
+    TransactionVersion:  gctypes.CoinCreationTxVersion,
+  }){{end}}
+  {{if .Blockchain.Transactions.Minting.CoinDestruction}}
+	types.RegisterTransactionVersion(gctypes.CoinDestructionTxVersion, minting.CoinDestructionTransactionController{
+		TransactionVersion: gctypes.CoinDestructionTxVersion,
+	}){{end}}
+}

@@ -51,223 +51,177 @@ func GetBlockchainInfo() types.BlockchainInfo {
 // GetStandardnetGenesis explicitly sets all the required constants for the genesis block of the standard (prod) net
 func GetStandardnetGenesis() types.ChainConstants {
 	cfg := types.StandardnetChainConstants()
-
-	// TODO: adapt where needed
-
+  {{range .Blockchain.Network}}{{if eq .NetworkType 1}}
 	// set transaction versions
 	cfg.DefaultTransactionVersion = types.TransactionVersionOne
 	cfg.GenesisTransactionVersion = types.TransactionVersionOne
 
 	// 2 minute block time
-	cfg.BlockFrequency = BlockFrequency
+	cfg.BlockFrequency = {{.BlockFrequency}}
 
 	// Payouts take roughly 1 day to mature.
-	cfg.MaturityDelay = 720
+	cfg.MaturityDelay = {{.MaturityDelay}}
 
-	// The genesis timestamp
-  {{ with index .Blockchain.Network "standard" }}
+  // The genesis timestamp
   cfg.GenesisTimestamp = types.Timestamp({{.Genesis.GenesisBlockTimestamp}})
-  {{ end }}
-
 
 	// 1000 block window for difficulty
-	cfg.TargetWindow = 1e3
+	cfg.TargetWindow = {{.TargetWindow}}
 
-	cfg.MaxAdjustmentUp = big.NewRat(25, 10)
-	cfg.MaxAdjustmentDown = big.NewRat(10, 25)
+	cfg.MaxAdjustmentUp = big.NewRat({{.MaxAdjustmentUp.Denominator}}, {{.MaxAdjustmentUp.Numerator}})
+	cfg.MaxAdjustmentDown = big.NewRat({{.MaxAdjustmentDown.Denominator}}, {{.MaxAdjustmentDown.Numerator}})
 
-	cfg.FutureThreshold = 1 * 60 * 60        // 1 hour.
-	cfg.ExtremeFutureThreshold = 2 * 60 * 60 // 2 hours.
+	cfg.FutureThreshold = {{.FutureThreshold}}        // 1 hour.
+	cfg.ExtremeFutureThreshold = {{.ExtremeFutureThreshold}} // 2 hours.
 
-	cfg.StakeModifierDelay = 2000
+	cfg.StakeModifierDelay = {{.StakeModifierDelay}}
 
 	// Blockstakes can be used roughly 1 day after receiving
-	cfg.BlockStakeAging = 1 << 17 // 2^16s < 1 day < 2^17s
+	cfg.BlockStakeAging = {{.BlockStakeAging}}
 
 	// Receive 0 coins when you create a block
-	cfg.BlockCreatorFee = cfg.CurrencyUnits.OneCoin.Mul64(0)
+	cfg.BlockCreatorFee = cfg.CurrencyUnits.OneCoin.Mul64({{.BlockCreatorFee}})
 
 	// Use 0.001 coins as minimum transaction fee
-	cfg.MinimumTransactionFee = cfg.CurrencyUnits.OneCoin.Div64(1000)
+	cfg.MinimumTransactionFee = cfg.CurrencyUnits.OneCoin.Div64({{.MinimumTransactionFee}})
 
-	// Foundation receives all transactions fees in a single pool address,
-  {{ with index .Blockchain.Network "standard" }}
+  // Foundation receives all transactions fees in a single pool address,
   cfg.TransactionFeeCondition = types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{ .TransactionFeePool }}")))
-  {{ end }}
 
 	// no  initial coins, except  1 for initial transaction fee payments
 	cfg.GenesisCoinDistribution = []types.CoinOutput{}
 
-	// allocate block stakes
-  {{ with index .Blockchain.Network "standard" }}
-    cfg.GenesisBlockStakeAllocation = []types.BlockStakeOutput{
-      {{ range .Genesis.BlockStakeOutputs }}
-      {
-        // 100 BS,
-        Value:     types.NewCurrency64({{.Value}}),
-        // TODO
-        Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{.Condition}}"))),
-      },
-      {{ end }}
-    }
-  {{ end }}
+  // allocate block stakes
+  cfg.GenesisBlockStakeAllocation = []types.BlockStakeOutput{
+    {{ range .Genesis.BlockStakeOutputs }}{
+      Value:     types.NewCurrency64({{.Value}}),
+      Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{.Condition | formatConditionAsString -}}"))),
+    },
+    {{ end }}
+  }
 
-	return cfg
+  {{end}}{{end}}return cfg
 }
 
 // GetTestnetGenesis explicitly sets all the required constants for the genesis block of the testnet
 func GetTestnetGenesis() types.ChainConstants {
 	cfg := types.TestnetChainConstants()
-
-	// TODO: adapt where needed
-
+  {{range .Blockchain.Network}}{{if eq .NetworkType 2}}
 	// set transaction versions
 	cfg.DefaultTransactionVersion = types.TransactionVersionOne
 	cfg.GenesisTransactionVersion = types.TransactionVersionOne
 
-	// 2 minute block time
-	cfg.BlockFrequency = BlockFrequency
+	cfg.BlockFrequency = {{.BlockFrequency}}
 
-	// Payouts take rougly 1 day to mature.
-	cfg.MaturityDelay = 720
+	cfg.MaturityDelay = {{.MaturityDelay}}
 
-  {{ with index .Blockchain.Network "testnet" }}
   // The genesis timestamp
   cfg.GenesisTimestamp = types.Timestamp({{.Genesis.GenesisBlockTimestamp}})
-  {{ end }}
 
-	// 1000 block window for difficulty
-	cfg.TargetWindow = 1e3
+	cfg.TargetWindow = {{.TargetWindow}}
 
-	cfg.MaxAdjustmentUp = big.NewRat(25, 10)
-	cfg.MaxAdjustmentDown = big.NewRat(10, 25)
+	cfg.MaxAdjustmentUp = big.NewRat({{.MaxAdjustmentUp.Denominator}}, {{.MaxAdjustmentUp.Numerator}})
+	cfg.MaxAdjustmentDown = big.NewRat({{.MaxAdjustmentDown.Denominator}}, {{.MaxAdjustmentDown.Numerator}})
 
-	cfg.FutureThreshold = 1 * 60 * 60        // 1 hour.
-	cfg.ExtremeFutureThreshold = 2 * 60 * 60 // 2 hours.
+	cfg.FutureThreshold = {{.FutureThreshold}}
+	cfg.ExtremeFutureThreshold = {{.ExtremeFutureThreshold}}
 
-	cfg.StakeModifierDelay = 2000
+	cfg.StakeModifierDelay = {{.StakeModifierDelay}}
 
-	// Blockstake can be used roughly 1 minute after receiving
-	cfg.BlockStakeAging = uint64(1 << 6)
+	cfg.BlockStakeAging = {{.BlockStakeAging}}
 
-	// Receive 0 coins when you create a block
-	cfg.BlockCreatorFee = cfg.CurrencyUnits.OneCoin.Mul64(0)
+	cfg.BlockCreatorFee = cfg.CurrencyUnits.OneCoin.Mul64({{.BlockCreatorFee}})
 
-	// Use 0.001 coins as minimum transaction fee
-	cfg.MinimumTransactionFee = cfg.CurrencyUnits.OneCoin.Div64(1000)
+	cfg.MinimumTransactionFee = cfg.CurrencyUnits.OneCoin.Div64({{.MinimumTransactionFee}})
 
 
 	// allocate block stakes
-  {{ with index .Blockchain.Network "testnet" }}
-    cfg.GenesisCoinDistribution = []types.CoinOutput{
-      {{ range .Genesis.CoinOutputs }}
-        {
-          Value: cfg.CurrencyUnits.OneCoin.Mul64({{ .Value }}),
-          Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{ .Condition }}"))),
-        },
-      {{ end }}
-    }
-
-    cfg.GenesisBlockStakeAllocation = []types.BlockStakeOutput{
-      {{ range .Genesis.BlockStakeOutputs }}
-      {
-        Value:     types.NewCurrency64({{ .Value }}),
-        Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{ .Condition }}"))),
+  cfg.GenesisCoinDistribution = []types.CoinOutput{
+    {{ range .Genesis.CoinOutputs }}{
+        Value: cfg.CurrencyUnits.OneCoin.Mul64({{ .Value }}),
+        Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{.Condition | formatConditionAsString -}}"))),
       },
-      {{ end }}
-    }
-  {{ end }}
+    {{ end }}
+  }
 
-	return cfg
+  // allocate block stakes
+  cfg.GenesisBlockStakeAllocation = []types.BlockStakeOutput{
+    {{ range .Genesis.BlockStakeOutputs }}{
+      Value:     types.NewCurrency64({{.Value}}),
+      Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{.Condition | formatConditionAsString -}}"))),
+    },
+    {{ end }}
+  }
+
+  {{end}}{{end}}return cfg
 }
 
 // GetDevnetGenesis explicitly sets all the required constants for the genesis block of the devnet
 func GetDevnetGenesis() types.ChainConstants {
 	cfg := types.DevnetChainConstants()
-
+  {{range .Blockchain.Network}}{{if eq .NetworkType 3}}
 	// set transaction versions
 	cfg.DefaultTransactionVersion = types.TransactionVersionOne
 	cfg.GenesisTransactionVersion = types.TransactionVersionOne
 
-	// 12 seconds, slow enough for developers to see
-	// ~each block, fast enough that blocks don't waste time
-	cfg.BlockFrequency = 12
+	cfg.BlockFrequency = {{.BlockFrequency}}
 
-	// 120 seconds before a delayed output matters
-	// as it's expressed in units of blocks
-	cfg.MaturityDelay = 10
-	cfg.MedianTimestampWindow = 11
+	cfg.MaturityDelay = {{.MaturityDelay}}
 
-	// The genesis timestamp
-  {{ with index .Blockchain.Network "testnet" }}
+  // The genesis timestamp
   cfg.GenesisTimestamp = types.Timestamp({{.Genesis.GenesisBlockTimestamp}})
-  {{ end }}
 
-	// difficulity is adjusted based on prior 20 blocks
-	cfg.TargetWindow = 20
+	cfg.TargetWindow = {{.TargetWindow}}
 
-	// Difficulty adjusts quickly.
-	cfg.MaxAdjustmentUp = big.NewRat(120, 100)
-	cfg.MaxAdjustmentDown = big.NewRat(100, 120)
+	cfg.MaxAdjustmentUp = big.NewRat({{.MaxAdjustmentUp.Denominator}}, {{.MaxAdjustmentUp.Numerator}})
+	cfg.MaxAdjustmentDown = big.NewRat({{.MaxAdjustmentDown.Denominator}}, {{.MaxAdjustmentDown.Numerator}})
 
-	cfg.FutureThreshold = 2 * 60        // 2 minutes
-	cfg.ExtremeFutureThreshold = 4 * 60 // 4 minutes
+	cfg.FutureThreshold = {{.FutureThreshold}}
+	cfg.ExtremeFutureThreshold = {{.ExtremeFutureThreshold}}
 
-	cfg.StakeModifierDelay = 2000
+	cfg.StakeModifierDelay = {{.StakeModifierDelay}}
 
-	// Blockstake can be used roughly 1 minute after receiving
-	cfg.BlockStakeAging = uint64(1 << 6)
+	cfg.BlockStakeAging = {{.BlockStakeAging}}
 
-	// Receive 10 coins when you create a block
-	cfg.BlockCreatorFee = cfg.CurrencyUnits.OneCoin.Mul64(10)
+	cfg.BlockCreatorFee = cfg.CurrencyUnits.OneCoin.Mul64({{.BlockCreatorFee}})
 
-	// Use 0.1 coins as minimum transaction fee
-	cfg.MinimumTransactionFee = cfg.CurrencyUnits.OneCoin.Mul64(1)
+	cfg.MinimumTransactionFee = cfg.CurrencyUnits.OneCoin.Div64({{.MinimumTransactionFee}})
 
-	// distribute initial coins
-	cfg.GenesisCoinDistribution = []types.CoinOutput{
-		{
-			// Create 100M coins
-			Value: cfg.CurrencyUnits.OneCoin.Mul64(100 * 1000 * 1000),
-			// belong to wallet with mnemonic:
-			// carbon boss inject cover mountain fetch fiber fit tornado cloth wing dinosaur proof joy intact fabric thumb rebel borrow poet chair network expire else
-			Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("015a080a9259b9d4aaa550e2156f49b1a79a64c7ea463d810d4493e8242e6791584fbdac553e6f"))),
-		},
-	}
 
 	// allocate block stakes
-	cfg.GenesisBlockStakeAllocation = []types.BlockStakeOutput{
-		{
-			// Create 3K blockstakes
-			Value: types.NewCurrency64(3000),
-			// belongs to wallet with mnemonic:
-			// carbon boss inject cover mountain fetch fiber fit tornado cloth wing dinosaur proof joy intact fabric thumb rebel borrow poet chair network expire else
-			Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("015a080a9259b9d4aaa550e2156f49b1a79a64c7ea463d810d4493e8242e6791584fbdac553e6f"))),
-		},
-	}
+  cfg.GenesisCoinDistribution = []types.CoinOutput{
+    {{ range .Genesis.CoinOutputs }}{
+        Value: cfg.CurrencyUnits.OneCoin.Mul64({{ .Value }}),
+        Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{.Condition | formatConditionAsString -}}"))),
+      },
+    {{ end }}
+  }
 
-	return cfg
+  // allocate block stakes
+  cfg.GenesisBlockStakeAllocation = []types.BlockStakeOutput{
+    {{ range .Genesis.BlockStakeOutputs }}{
+      Value:     types.NewCurrency64({{.Value}}),
+      Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{.Condition | formatConditionAsString -}}"))),
+    },
+    {{ end }}
+  }
+
+  {{end}}{{end}}return cfg
 }
 
 // GetStandardnetBootstrapPeers sets the standard bootstrap node addresses
 func GetStandardnetBootstrapPeers() []modules.NetAddress {
 	return []modules.NetAddress{
-      {{ with index .Blockchain.Network "standard" }}
-        {{ range .BootstrapPeers }}
-          {{ "." }},
-        {{ end }}
-      {{ end }}
+    {{range .Blockchain.Network}}{{if eq .NetworkType 1}}{{range .BootstrapPeers}}"{{.Address}}",
+    {{end}}{{end}}{{end}}
 	}
 }
 
 // GetTestnetBootstrapPeers sets the testnet bootstrap node addresses
 func GetTestnetBootstrapPeers() []modules.NetAddress {
 	return []modules.NetAddress{
-		{{ with index .Blockchain.Network "testnet" }}
-      {{ range .BootstrapPeers }}
-        {{ "." }},
-      {{ end }}
-    {{ end }}
+    {{range .Blockchain.Network}}{{if eq .NetworkType 2}}{{range .BootstrapPeers}}"{{.Address}}",
+    {{end}}{{end}}{{end}}
 	}
 }
 

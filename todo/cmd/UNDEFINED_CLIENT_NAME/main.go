@@ -23,6 +23,21 @@ func main() {
 		panic(err)
 	}
 
+	// register goldchain-specific explorer commands
+	mintingcli.CreateExploreCmd(cliClient.CommandLineClient)
+	mintingcli.CreateConsensusCmd(cliClient.CommandLineClient)
+	authcointxcli.CreateExploreAuthCoinInfoCmd(cliClient.CommandLineClient)
+
+	// add cli wallet extension commands
+	mintingcli.CreateWalletCmds(
+		cliClient.CommandLineClient,
+		types.MinterDefinitionTxVersion,
+		types.CoinCreationTxVersion,
+		&mintingcli.WalletCmdsOpts{
+			CoinDestructionTxVersion: types.CoinDestructionTxVersion,
+		},
+	)
+
 	// define preRun function
 	cliClient.PreRunE = func(cfg *client.Config) (*client.Config, error) {
 		if cfg == nil {

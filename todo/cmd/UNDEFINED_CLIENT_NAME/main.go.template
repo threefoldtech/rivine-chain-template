@@ -8,7 +8,8 @@ import (
 	"github.com/threefoldtech/rivine/pkg/daemon"
 
 	"{{.Blockchain.Repository}}/pkg/config"
-	"{{.Blockchain.Repository}}/pkg/types" 
+	"{{.Blockchain.Repository}}/pkg/types"
+	{{if .Blockchain.Transactions.Minting}}mintingcli "github.com/threefoldtech/rivine/extensions/minting/client"{{end}}
 
 	"github.com/threefoldtech/rivine/modules"
 	"github.com/threefoldtech/rivine/pkg/client"
@@ -21,6 +22,20 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	{{if .Blockchain.Transactions.Minting}}// register goldchain-specific explorer commands
+	mintingcli.CreateExploreCmd(cliClient.CommandLineClient)
+	mintingcli.CreateConsensusCmd(cliClient.CommandLineClient)
+
+	// add cli wallet extension commands
+	mintingcli.CreateWalletCmds(
+		cliClient.CommandLineClient,
+		types.MinterDefinitionTxVersion,
+		types.CoinCreationTxVersion,
+		{{if .Blockchain.Transactions.Minting.CoinDestruction}}&mintingcli.WalletCmdsOpts{
+			CoinDestructionTxVersion: types.CoinDestructionTxVersion,
+		},{{end}}
+	){{end}}
 
 	// define preRun function
 	cliClient.PreRunE = func(cfg *client.Config) (*client.Config, error) {
@@ -39,17 +54,12 @@ func main() {
 			// overwrite standard network genesis block stamp,
 			// as the genesis block is way earlier than the actual first block,
 			// due to the hard reset at the bumpy/rough start
-      {{$bc := .Blockchain}}{{ with index .Blockchain.Network "standard" }}
-			cfg.GenesisBlockTimestamp = {{.Genesis.GenesisBlockTimestamp}} // timestamp of (standard) block #1
-      {{ end }}
+      {{range .Blockchain.Network}}{{if eq .NetworkType 1}}cfg.GenesisBlockTimestamp = {{.Genesis.GenesisBlockTimestamp}} // timestamp of (standard) block #1{{end}}{{end}}
 		case config.NetworkNameTest:
 			RegisterTestnetTransactions(cliClient.CommandLineClient)
 
 			// seems like testnet timestamp wasn't updated last time it was reset
-			{{$bc := .Blockchain}}{{ with index .Blockchain.Network "testnet" }}
-			cfg.GenesisBlockTimestamp = {{.Genesis.GenesisBlockTimestamp}} // timestamp of (standard) block #1
-      {{ end }}
-
+      {{range .Blockchain.Network}}{{if eq .NetworkType 1}}cfg.GenesisBlockTimestamp = {{.Genesis.GenesisBlockTimestamp}} // timestamp of (standard) block #1{{end}}{{end}}
 		case config.NetworkNameDev:
 			RegisterDevnetTransactions(cliClient.CommandLineClient)
 

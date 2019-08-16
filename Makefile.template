@@ -43,4 +43,3 @@ install-std:
 	go build -ldflags '$(ldflagsversion)' -o $(clientbin) $(clientpkgs)
 
 .PHONY: all test fmt vet install install-std
- vet install install-std

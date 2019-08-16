@@ -7,7 +7,9 @@ import (
 // GetStandardGenesisMintCondition returns the standard network  minting condition
 func GetStandardGenesisMintCondition() types.UnlockConditionProxy {
 	// TODO: define final multisig condition
-	address := ""
+  address := ""
+	{{range .Blockchain.Network}}{{if eq .NetworkType 1}}{{if .Genesis.Minting}}address = "{{.Genesis.Minting | formatConditionAsString -}}"{{end}}
+  {{end}}{{end}}
 	var uh types.UnlockHash
 	if err := uh.LoadString(address); err != nil {
 		panic(err)
@@ -19,7 +21,8 @@ func GetStandardGenesisMintCondition() types.UnlockConditionProxy {
 // GetTestnetGenesisMintCondition returns the testnet network  minting condition
 func GetTestnetGenesisMintCondition() types.UnlockConditionProxy {
 	// @leesmet
-  {{range .Blockchain.Network}}{{if eq .NetworkType 1}}{{if .Genesis.Minting}}address := "{{.Genesis.Minting | formatConditionAsString -}}"{{else}}address := "01215a03f0098c4fcd801854da4d7bb2e9c78b4d3598fec89f42bc19fb79889bbf7a6aabdbe95f"{{end}}
+  address := ""
+  {{range .Blockchain.Network}}{{if eq .NetworkType 2}}{{if .Genesis.Minting}}address = "{{.Genesis.Minting | formatConditionAsString -}}"{{end}}
   {{end}}{{end}}
 	var uh types.UnlockHash
 	if err := uh.LoadString(address); err != nil {
@@ -33,8 +36,8 @@ func GetTestnetGenesisMintCondition() types.UnlockConditionProxy {
 func GetDevnetGenesisMintCondition() types.UnlockConditionProxy {
 	// belongs to wallet with mnemonic:
 	// carbon boss inject cover mountain fetch fiber fit tornado cloth wing dinosaur proof joy intact fabric thumb rebel borrow poet chair network expire else
-  {{range .Blockchain.Network}}{{if eq .NetworkType 2}}{{if .Genesis.Minting}}address := "{{.Genesis.Minting | formatConditionAsString -}}"{{else}}address := "015a080a9259b9d4aaa550e2156f49b1a79a64c7ea463d810d4493e8242e6791584fbdac553e6f"{{end}}
-  {{end}}{{end}}
+  address := ""
+  {{range .Blockchain.Network}}{{if eq .NetworkType 3}}{{if .Genesis.Minting}}address := "{{.Genesis.Minting | formatConditionAsString -}}"{{end}}{{end}}{{end}}
 	var uh types.UnlockHash
 	if err := uh.LoadString(address); err != nil {
 		panic(err)

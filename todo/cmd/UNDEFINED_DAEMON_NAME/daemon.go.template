@@ -12,8 +12,12 @@ import (
 	"time"
 
 	"{{.Blockchain.Repository}}/pkg/config" // TODO: add repo
+  {{.Blockchain.Name}}types "{{.Blockchain.Repository}}/pkg/types"
 	"github.com/threefoldtech/rivine/types"
 
+  {{if .Blockchain.Transactions.Minting}}"github.com/threefoldtech/rivine/extensions/minting"
+	mintingapi "github.com/threefoldtech/rivine/extensions/minting/api"
+  {{end}}
 	"github.com/julienschmidt/httprouter"
 	"github.com/threefoldtech/rivine/modules"
 	"github.com/threefoldtech/rivine/modules/blockcreator"
@@ -117,6 +121,28 @@ func runDaemon(cfg ExtendedDaemonConfig, moduleIdentifiers daemon.ModuleIdentifi
 					fmt.Println("Error during consensus set shutdown:", err)
 				}
 			}()
+
+      {{if .Blockchain.Transactions.Minting}}// register the minting extension plugin
+			mintingPlugin = minting.NewMintingPlugin(
+				setupNetworkCfg.GenesisMintCondition,
+				{{.Blockchain.Name}}types.MinterDefinitionTxVersion,
+				{{.Blockchain.Name}}types.CoinCreationTxVersion,
+        {{if .Blockchain.Transactions.Minting.CoinDestruction}}&minting.PluginOptions{
+					CoinDestructionTransactionVersion: {{.Blockchain.Name}}types.CoinDestructionTxVersion,
+				},{{end}}
+			)
+			err = cs.RegisterPlugin(ctx, "minting", mintingPlugin)
+			if err != nil {
+				servErrs <- fmt.Errorf("failed to register the minting extension: %v", err)
+				err = mintingPlugin.Close() //make sure any resources are released
+				if err != nil {
+					fmt.Println("Error during closing of the mintingPlugin :", err)
+				}
+				cancel()
+				return
+			}
+			// add the HTTP handlers for the auth coin tx extension as well
+			mintingapi.RegisterConsensusMintingHTTPHandlers(router, mintingPlugin){{end}}
 		}
 
 		var tpool modules.TransactionPool
@@ -200,9 +226,8 @@ func runDaemon(cfg ExtendedDaemonConfig, moduleIdentifiers daemon.ModuleIdentifi
 				}
 			}()
 
-			// register extension HTTP handlers
-			authcointxapi.RegisterExplorerAuthCoinHTTPHandlers(router, authCoinTxPlugin)
-			mintingapi.RegisterExplorerMintingHTTPHandlers(router, mintingPlugin)
+      {{if .Blockchain.Transactions.Minting}}mintingapi.RegisterExplorerMintingHTTPHandlers(router, mintingPlugin)
+      {{end}}
 		}
 
 		fmt.Println("Setting up root HTTP API handler...")

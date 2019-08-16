@@ -2,8 +2,12 @@ package main
 
 import (
 	"github.com/threefoldtech/rivine/extensions/minting"
+  mintingcli "github.com/threefoldtech/rivine/extensions/minting/client"
+
 	"github.com/threefoldtech/rivine/pkg/client"
 	"github.com/threefoldtech/rivine/types"
+
+  {{.Blockchain.Name}}types "github.com/{{.Blockchain.Owner}}/{{.Blockchain.Name}}/pkg/types"
 )
 
 // RegisterStandardTransactions registers the {{.Blockchain.Name}}-specific transactions as required for the standard network.

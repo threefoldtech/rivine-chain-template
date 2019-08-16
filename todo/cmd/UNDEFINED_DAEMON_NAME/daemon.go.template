@@ -11,8 +11,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/{{.Blockchain.Name}}/pkg/config" // TODO: add repo
-  {{.Blockchain.Name}}types "github.com/{{.Blockchain.Name}}/pkg/types"
+	"github.com/{{.Blockchain.Owner}}/{{.Blockchain.Name}}/pkg/config" // TODO: add repo
+  {{.Blockchain.Name}}types "github.com/{{.Blockchain.Owner}}/{{.Blockchain.Name}}/pkg/types"
 	"github.com/threefoldtech/rivine/types"
 
   {{if .Blockchain.Transactions.Minting}}"github.com/threefoldtech/rivine/extensions/minting"
@@ -28,6 +28,12 @@ import (
 	"github.com/threefoldtech/rivine/modules/wallet"
 	rivineapi "github.com/threefoldtech/rivine/pkg/api"
 	"github.com/threefoldtech/rivine/pkg/daemon"
+)
+
+const (
+	// maxConcurrentRPC is the maximum amount of concurrent RPC's to be handled
+	// per peer
+	maxConcurrentRPC = 1
 )
 
 func runDaemon(cfg ExtendedDaemonConfig, moduleIdentifiers daemon.ModuleIdentifierSet) error {
@@ -84,7 +90,7 @@ func runDaemon(cfg ExtendedDaemonConfig, moduleIdentifiers daemon.ModuleIdentifi
 		var g modules.Gateway
 		if moduleIdentifiers.Contains(daemon.GatewayModule.Identifier()) {
 			printModuleIsLoading("gateway")
-			g, err = gateway.New(cfg.RPCaddr, !cfg.NoBootstrap,
+			g, err = gateway.New(cfg.RPCaddr, !cfg.NoBootstrap, maxConcurrentRPC,
 				filepath.Join(cfg.RootPersistentDir, modules.GatewayDir),
 				cfg.BlockchainInfo, networkCfg.Constants, networkCfg.BootstrapPeers, cfg.VerboseLogging)
 			if err != nil {
@@ -103,6 +109,7 @@ func runDaemon(cfg ExtendedDaemonConfig, moduleIdentifiers daemon.ModuleIdentifi
 		}
 
 		var cs modules.ConsensusSet
+    {{.Blockchain.Transactions.Minting}}var mintingPlugin    *minting.Plugin{{end}}
 		if moduleIdentifiers.Contains(daemon.ConsensusSetModule.Identifier()) {
 			printModuleIsLoading("consensus set")
 			cs, err = consensus.New(g, !cfg.NoBootstrap,
@@ -297,6 +304,7 @@ func runDaemon(cfg ExtendedDaemonConfig, moduleIdentifiers daemon.ModuleIdentifi
 
 type setupNetworkConfig struct {
 	NetworkConfig        daemon.NetworkConfig
+  {{if .Blockchain.Transactions.Minting}}GenesisMintCondition types.UnlockConditionProxy{{end}}
 }
 
 // setupNetwork injects the correct chain constants and genesis nodes based on the chosen network,

@@ -7,8 +7,8 @@ import (
 	"github.com/threefoldtech/rivine/pkg/cli"
 	"github.com/threefoldtech/rivine/pkg/daemon"
 
-	"{{.Blockchain.Repository}}/pkg/config"
-	"{{.Blockchain.Repository}}/pkg/types"
+	"github.com/{{.Blockchain.Owner}}/{{.Blockchain.Name}}/pkg/config"
+	"github.com/{{.Blockchain.Owner}}/{{.Blockchain.Name}}/pkg/types"
 	{{if .Blockchain.Transactions.Minting}}mintingcli "github.com/threefoldtech/rivine/extensions/minting/client"{{end}}
 
 	"github.com/threefoldtech/rivine/modules"

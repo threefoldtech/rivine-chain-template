@@ -109,7 +109,7 @@ func runDaemon(cfg ExtendedDaemonConfig, moduleIdentifiers daemon.ModuleIdentifi
 		}
 
 		var cs modules.ConsensusSet
-    {{.Blockchain.Transactions.Minting}}var mintingPlugin    *minting.Plugin{{end}}
+    {{if .Blockchain.Transactions.Minting}}var mintingPlugin    *minting.Plugin{{end}}
 		if moduleIdentifiers.Contains(daemon.ConsensusSetModule.Identifier()) {
 			printModuleIsLoading("consensus set")
 			cs, err = consensus.New(g, !cfg.NoBootstrap,

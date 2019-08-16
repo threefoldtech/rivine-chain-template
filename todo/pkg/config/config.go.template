@@ -83,7 +83,7 @@ func GetStandardnetGenesis() types.ChainConstants {
 	cfg.BlockCreatorFee = cfg.CurrencyUnits.OneCoin.Mul64({{.BlockCreatorFee}})
 
 	// Use 0.001 coins as minimum transaction fee
-	cfg.MinimumTransactionFee = cfg.CurrencyUnits.OneCoin.Div64({{.MinimumTransactionFee}})
+	cfg.MinimumTransactionFee = cfg.CurrencyUnits.OneCoin.Div64({{.MinimumTransactionFee}} * 100)
 
   // Foundation receives all transactions fees in a single pool address,
   cfg.TransactionFeeCondition = types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{ .TransactionFeePool }}")))
@@ -132,7 +132,7 @@ func GetTestnetGenesis() types.ChainConstants {
 
 	cfg.BlockCreatorFee = cfg.CurrencyUnits.OneCoin.Mul64({{.BlockCreatorFee}})
 
-	cfg.MinimumTransactionFee = cfg.CurrencyUnits.OneCoin.Div64({{.MinimumTransactionFee}})
+	cfg.MinimumTransactionFee = cfg.CurrencyUnits.OneCoin.Div64({{.MinimumTransactionFee}} * 100)
 
 
 	// allocate block stakes
@@ -185,7 +185,7 @@ func GetDevnetGenesis() types.ChainConstants {
 
 	cfg.BlockCreatorFee = cfg.CurrencyUnits.OneCoin.Mul64({{.BlockCreatorFee}})
 
-	cfg.MinimumTransactionFee = cfg.CurrencyUnits.OneCoin.Div64({{.MinimumTransactionFee}})
+	cfg.MinimumTransactionFee = cfg.CurrencyUnits.OneCoin.Div64({{.MinimumTransactionFee}} * 100)
 
 
 	// allocate block stakes

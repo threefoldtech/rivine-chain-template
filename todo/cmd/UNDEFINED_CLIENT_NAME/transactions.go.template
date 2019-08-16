@@ -29,15 +29,15 @@ func registerTransactions(cli *client.CommandLineClient) {
   {{if .Blockchain.Transactions.Minting}}{{if .Blockchain.Transactions.Minting.ConditionUpdate}}// create minting plugin client...
   mintingCLI := mintingcli.NewPluginConsensusClient(cli)
   // ...and register minting types
-  types.RegisterTransactionVersion(gctypes.MinterDefinitionTxVersion, minting.MinterDefinitionTransactionController{
+  types.RegisterTransactionVersion({{.Blockchain.Name}}types.MinterDefinitionTxVersion, minting.MinterDefinitionTransactionController{
     MintConditionGetter: mintingCLI,
-    TransactionVersion:  gctypes.MinterDefinitionTxVersion,
+    TransactionVersion:  {{.Blockchain.Name}}types.MinterDefinitionTxVersion,
   }){{end}}{{end}}{{if .Blockchain.Transactions.Minting}}{{if .Blockchain.Transactions.Minting.CoinCreation}}
-  types.RegisterTransactionVersion(gctypes.CoinCreationTxVersion, minting.CoinCreationTransactionController{
+  types.RegisterTransactionVersion({{.Blockchain.Name}}types.CoinCreationTxVersion, minting.CoinCreationTransactionController{
     MintConditionGetter: mintingCLI,
-    TransactionVersion:  gctypes.CoinCreationTxVersion,
+    TransactionVersion:  {{.Blockchain.Name}}types.CoinCreationTxVersion,
   }){{end}}{{end}}{{if .Blockchain.Transactions.Minting}}{{if .Blockchain.Transactions.Minting.CoinDestruction}}
-	types.RegisterTransactionVersion(gctypes.CoinDestructionTxVersion, minting.CoinDestructionTransactionController{
-		TransactionVersion: gctypes.CoinDestructionTxVersion,
+	types.RegisterTransactionVersion({{.Blockchain.Name}}types.CoinDestructionTxVersion, minting.CoinDestructionTransactionController{
+		TransactionVersion: {{.Blockchain.Name}}types.CoinDestructionTxVersion,
 	}){{end}}{{end}}
 }

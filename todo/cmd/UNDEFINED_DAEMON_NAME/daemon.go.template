@@ -153,9 +153,10 @@ func runDaemon(cfg ExtendedDaemonConfig, moduleIdentifiers daemon.ModuleIdentifi
 				cancel()
 				return
 			}
-			{{if .Blockchain.Transactions.Authcoin}}// add the HTTP handlers for the auth coin tx extension as well
+			// add the HTTP handlers for the auth coin tx extension as well
 			mintingapi.RegisterConsensusMintingHTTPHandlers(router, mintingPlugin){{end}}
 
+			{{if .Blockchain.Transactions.Authcoin}}
 			// register the auth coin tx plugin
 			// > NOTE: this also overwrites the standard tx controllers!!!!
 			authCoinTxPlugin = authcointx.NewPlugin(

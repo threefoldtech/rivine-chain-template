@@ -113,7 +113,7 @@ func runDaemon(cfg ExtendedDaemonConfig, moduleIdentifiers daemon.ModuleIdentifi
 
 		var cs modules.ConsensusSet
     {{if .Blockchain.Transactions.Minting}}var mintingPlugin    *minting.Plugin{{end}}
-		{{if .Blockchain.Transactions.Authcoin}}authCoinTxPlugin *authcointx.Plugin{{end}}
+		{{if .Blockchain.Transactions.Authcoin}}var authCoinTxPlugin *authcointx.Plugin{{end}}
 
 		if moduleIdentifiers.Contains(daemon.ConsensusSetModule.Identifier()) {
 			printModuleIsLoading("consensus set")
@@ -160,8 +160,8 @@ func runDaemon(cfg ExtendedDaemonConfig, moduleIdentifiers daemon.ModuleIdentifi
 			// > NOTE: this also overwrites the standard tx controllers!!!!
 			authCoinTxPlugin = authcointx.NewPlugin(
 				setupNetworkCfg.GenesisAuthCondition,
-				goldchaintypes.TransactionVersionAuthAddressUpdateTx,
-				goldchaintypes.TransactionVersionAuthConditionUpdateTx,
+				{{.Blockchain.Name}}types.TransactionVersionAuthAddressUpdateTx,
+				{{.Blockchain.Name}}types.TransactionVersionAuthConditionUpdateTx,
 				nil, // no custom opts
 			)
 			err = cs.RegisterPlugin(ctx, "authcointx", authCoinTxPlugin)
@@ -359,7 +359,7 @@ func setupNetwork(cfg ExtendedDaemonConfig) (setupNetworkConfig, error) {
         BootstrapPeers: bootstrapPeers,
       },
       {{if .Genesis.Minting}}GenesisMintCondition: genesisMintCondition,{{end}}
-			{{if .Genesis.Minting}}GenesisAuthCondition: genesisAuthCondition,{{end}}
+			{{if .Genesis.Authcoin}}GenesisAuthCondition: genesisAuthCondition,{{end}}
     }, nil{{end}}{{end}}
   {{range .Blockchain.Network}}{{if eq .NetworkType 3}}
   case config.NetworkNameDev:
@@ -377,7 +377,7 @@ func setupNetwork(cfg ExtendedDaemonConfig) (setupNetworkConfig, error) {
         BootstrapPeers: bootstrapPeers,
       },
 			{{if .Genesis.Minting}}GenesisMintCondition: genesisMintCondition,{{end}}
-			{{if .Genesis.Minting}}GenesisAuthCondition: genesisAuthCondition,{{end}}
+			{{if .Genesis.Authcoin}}GenesisAuthCondition: genesisAuthCondition,{{end}}
     }, nil
   {{end}}{{end}}
 	default:

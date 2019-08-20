@@ -11,3 +11,9 @@ const (
 	{{if .Blockchain.Transactions.Minting.CoinDestruction}}CoinDestructionTxVersion{{end}}
   {{end}}
 )
+
+{{if .Blockchain.Transactions.Authcoin}}// Auth Coin Tx Extension Transaction Versions
+const (
+	TransactionVersionAuthAddressUpdateTx types.TransactionVersion = iota + 176
+	TransactionVersionAuthConditionUpdateTx
+){{end}}

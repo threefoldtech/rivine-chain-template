@@ -10,6 +10,7 @@ import (
 	"github.com/{{.Blockchain.Owner}}/{{.Blockchain.Name}}/pkg/config"
 	"github.com/{{.Blockchain.Owner}}/{{.Blockchain.Name}}/pkg/types"
 	{{if .Blockchain.Transactions.Minting}}mintingcli "github.com/threefoldtech/rivine/extensions/minting/client"{{end}}
+	{{if .Blockchain.Transactions.Authcoin}}authcointxcli "github.com/threefoldtech/rivine/extensions/authcointx/client"{{end}}
 
 	"github.com/threefoldtech/rivine/modules"
 	"github.com/threefoldtech/rivine/pkg/client"
@@ -35,6 +36,13 @@ func main() {
 		{{if .Blockchain.Transactions.Minting.CoinDestruction}}&mintingcli.WalletCmdsOpts{
 			CoinDestructionTxVersion: types.CoinDestructionTxVersion,
 		},{{end}}
+	){{end}}
+
+	{{if .Blockchain.Transactions.Authcoin}}authcointxcli.CreateExploreAuthCoinInfoCmd(cliClient.CommandLineClient)
+	authcointxcli.CreateWalletCmds(
+		cliClient.CommandLineClient,
+		types.TransactionVersionAuthConditionUpdateTx,
+		types.TransactionVersionAuthAddressUpdateTx,
 	){{end}}
 
 	// define preRun function

@@ -209,6 +209,12 @@ func GetDevnetGenesis() types.ChainConstants {
   {{end}}{{end}}return cfg
 }
 
+{{range .Blockchain.Network}}{{if eq .NetworkType 1}}// GetStandardnetGenesisAuthCoinCondition returns the genesis auth condition used for the standard (prod) net
+{{if .Genesis.Authcoin}}func GetStandardnetGenesisAuthCoinCondition() types.UnlockConditionProxy {
+	// TODO: adapt to real condition, also being multi-sig
+	return types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{.Genesis.Authcoin}}")))
+}{{end}}{{end}}{{end}}
+
 // GetStandardnetBootstrapPeers sets the standard bootstrap node addresses
 func GetStandardnetBootstrapPeers() []modules.NetAddress {
 	return []modules.NetAddress{
@@ -216,6 +222,13 @@ func GetStandardnetBootstrapPeers() []modules.NetAddress {
     {{end}}{{end}}{{end}}
 	}
 }
+
+{{range .Blockchain.Network}}{{if eq .NetworkType 2}}// GetTestnetGenesisAuthCoinCondition returns the genesis auth condition used for the testnet
+{{if .Genesis.Authcoin}}func GetTestnetGenesisAuthCoinCondition() types.UnlockConditionProxy {
+	// @leesmet, to be changed to 1 out of 2 multisig once we have an automated
+	// faucet for this
+	return types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{.Genesis.Authcoin}}")))
+}{{end}}{{end}}{{end}}
 
 // GetTestnetBootstrapPeers sets the testnet bootstrap node addresses
 func GetTestnetBootstrapPeers() []modules.NetAddress {
@@ -225,10 +238,15 @@ func GetTestnetBootstrapPeers() []modules.NetAddress {
 	}
 }
 
+{{range .Blockchain.Network}}{{if eq .NetworkType 3}}// GetDevnetGenesisAuthCoinCondition returns the genesis auth condition used for the devnet
+{{if .Genesis.Authcoin}}func GetDevnetGenesisAuthCoinCondition() types.UnlockConditionProxy {
+	return types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{.Genesis.Authcoin}}")))
+}{{end}}{{end}}{{end}}
+
 // GetDevnetBootstrapPeers sets the default devnet bootstrap node addresses
 func GetDevnetBootstrapPeers() []modules.NetAddress {
 	return []modules.NetAddress{
-		"localhost:{{ .Blockchain.Ports.API }}", // TODO: add port
+		"localhost:{{ .Blockchain.Ports.RPC }}", // TODO: add port
 	}
 }
 

@@ -4,16 +4,16 @@ import "github.com/threefoldtech/rivine/types"
 
 const (
 	//MinterDefinitionTxVersion is the transaction version for the   minterdefinition transaction
-	{{if .Blockchain.Transactions.Minting}}MinterDefinitionTxVersion types.TransactionVersion = iota + 128
+	{{if .Blockchain.Transactions.Minting}}MinterDefinitionTxVersion types.TransactionVersion = {{.Blockchain.Transactions.Minting.ConditionUpdate.Version}}
 	//CoinCreationTxVersion is the transaction version for the coin creation transaction
-	CoinCreationTxVersion
-	//CoinDestructionTxVersion is the transaction version for the coin destruction transaction
-	{{if .Blockchain.Transactions.Minting.CoinDestruction}}CoinDestructionTxVersion{{end}}
+	CoinCreationTxVersion = {{.Blockchain.Transactions.Minting.CoinCreation.Version}}
+	{{if .Blockchain.Transactions.Minting.CoinDestruction}}//CoinDestructionTxVersion is the transaction version for the coin destruction transaction
+	CoinDestructionTxVersion = {{.Blockchain.Transactions.Minting.CoinDestruction.Version}}{{end}}
   {{end}}
 )
 
 {{if .Blockchain.Transactions.Authcoin}}// Auth Coin Tx Extension Transaction Versions
 const (
-	TransactionVersionAuthAddressUpdateTx types.TransactionVersion = iota + 176
-	TransactionVersionAuthConditionUpdateTx
+	TransactionVersionAuthAddressUpdateTx types.TransactionVersion = {{.Blockchain.Transactions.Authcoin.TransactionVersionAuthAddressUpdateTx.Version}}
+	TransactionVersionAuthConditionUpdateTx = {{.Blockchain.Transactions.Authcoin.TransactionVersionAuthConditionUpdateTx.Version}}
 ){{end}}

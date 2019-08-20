@@ -11,11 +11,11 @@ https://explorer.something.com {
         Access-Control-Allow-Headers  *
     }
 
-    proxy /explorer localhost:22110 {
+    proxy /explorer localhost:{{.Blockchain.Ports.API}} {
         header_upstream User-Agent Rivine-Agent
     }
 
-    proxy /transactionpool/transactions localhost:22110 {
+    proxy /transactionpool/transactions localhost:{{.Blockchain.Ports.API}} {
         header_upstream User-Agent Rivine-Agent
     }
 

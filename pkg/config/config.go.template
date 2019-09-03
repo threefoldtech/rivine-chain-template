@@ -2,9 +2,11 @@ package config
 
 import (
 	"fmt"
+	"math/big"
 
 	"github.com/threefoldtech/rivine/build"
 	"github.com/threefoldtech/rivine/types"
+	"github.com/threefoldtech/rivine/modules"
 )
 
 var (
@@ -37,8 +39,8 @@ const (
 
 {{ range $key, $network := $blockchain.Network }}
 {{ if gt $network.NetworkType $defaultnetworktype }}
-$defaultnetworktype = $network.NetworkType
-$defaultnetwork = $key
+{{ $defaultnetworktype = $network.NetworkType }}
+{{ $defaultnetwork = $key }}
 {{ end }}
 {{ end }}
 

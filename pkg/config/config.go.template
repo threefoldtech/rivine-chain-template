@@ -57,6 +57,9 @@ func GetBlockchainInfo() types.BlockchainInfo {
 	}
 }
 
+{{ end }}
+{{ end }}
+
 {{ range $key, $network := .Blockchain.Network }}
 
 {{ if gt $network.NetworkType $defaultnetworktype }}

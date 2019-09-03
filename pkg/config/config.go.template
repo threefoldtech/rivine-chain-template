@@ -32,11 +32,6 @@ const (
 	NetworkNameDev      = "devnet"
 )
 
-// global network config constants
-const (
-	BlockFrequency types.BlockHeight = 120 // 1 block per 2 minutes on average
-)
-
 // GetBlockchainInfo returns the naming and versioning of tfchain.
 func GetBlockchainInfo() types.BlockchainInfo {
 	return types.BlockchainInfo{
@@ -51,54 +46,60 @@ func GetBlockchainInfo() types.BlockchainInfo {
 // GetStandardnetGenesis explicitly sets all the required constants for the genesis block of the standard (prod) net
 func GetStandardnetGenesis() types.ChainConstants {
 	cfg := types.StandardnetChainConstants()
-  {{range .Blockchain.Network}}{{if eq .NetworkType 1}}
+	{{range .Blockchain.Network}}{{if eq .NetworkType 1}}
 	// set transaction versions
 	cfg.DefaultTransactionVersion = types.TransactionVersionOne
 	cfg.GenesisTransactionVersion = types.TransactionVersionOne
 
-	// 2 minute block time
+	// block time
 	cfg.BlockFrequency = {{.BlockFrequency}}
 
-	// Payouts take roughly 1 day to mature.
+	// Time to MaturityDelay
 	cfg.MaturityDelay = {{.MaturityDelay}}
 
-  // The genesis timestamp
-  cfg.GenesisTimestamp = types.Timestamp({{.Genesis.GenesisBlockTimestamp}})
+	// The genesis timestamp
+	cfg.GenesisTimestamp = types.Timestamp({{.Genesis.GenesisBlockTimestamp}})
 
-	// 1000 block window for difficulty
+	// block window for difficulty
 	cfg.TargetWindow = {{.TargetWindow}}
 
 	cfg.MaxAdjustmentUp = big.NewRat({{.MaxAdjustmentUp.Denominator}}, {{.MaxAdjustmentUp.Numerator}})
 	cfg.MaxAdjustmentDown = big.NewRat({{.MaxAdjustmentDown.Denominator}}, {{.MaxAdjustmentDown.Numerator}})
 
-	cfg.FutureThreshold = {{.FutureThreshold}}        // 1 hour.
-	cfg.ExtremeFutureThreshold = {{.ExtremeFutureThreshold}} // 2 hours.
+	cfg.FutureThreshold = {{.FutureThreshold}}
+	cfg.ExtremeFutureThreshold = {{.ExtremeFutureThreshold}}
 
 	cfg.StakeModifierDelay = {{.StakeModifierDelay}}
 
-	// Blockstakes can be used roughly 1 day after receiving
+	// Time it takes before transferred blockstakes can be used
 	cfg.BlockStakeAging = {{.BlockStakeAging}}
 
-	// Receive 0 coins when you create a block
+	// Coins you receive when you create a block
 	cfg.BlockCreatorFee = cfg.CurrencyUnits.OneCoin.Mul64({{.BlockCreatorFee}})
 
-	// Use 0.001 coins as minimum transaction fee
+	// Minimum transaction fee
 	cfg.MinimumTransactionFee = cfg.CurrencyUnits.OneCoin.Div64({{.MinimumTransactionFee}} * 100)
 
-  // Foundation receives all transactions fees in a single pool address,
-  cfg.TransactionFeeCondition = types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{ .TransactionFeePool }}")))
+	// Foundation receives all transactions fees in a single pool address,
+	cfg.TransactionFeeCondition = types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{ .TransactionFeePool }}")))
 
-	// no  initial coins, except  1 for initial transaction fee payments
-	cfg.GenesisCoinDistribution = []types.CoinOutput{}
-
-  // allocate block stakes
-  cfg.GenesisBlockStakeAllocation = []types.BlockStakeOutput{
-    {{ range .Genesis.BlockStakeOutputs }}{
-      Value:     types.NewCurrency64({{.Value}}),
-      Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{.Condition | formatConditionAsString -}}"))),
-    },
+	// no initial coins, except  1 for initial transaction fee payments
+	cfg.GenesisCoinDistribution = []types.CoinOutput{
+    {{ range .Genesis.CoinOutputs }}{
+        Value: cfg.CurrencyUnits.OneCoin.Mul64({{ .Value }}),
+        Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{.Condition | formatConditionAsString -}}"))),
+      },
     {{ end }}
   }
+
+	// allocate block stakes
+	cfg.GenesisBlockStakeAllocation = []types.BlockStakeOutput{
+		{{ range .Genesis.BlockStakeOutputs }}{
+		Value:     types.NewCurrency64({{.Value}}),
+		Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{.Condition | formatConditionAsString -}}"))),
+	},
+	{{ end }}
+}
 
   {{end}}{{end}}return cfg
 }
@@ -115,8 +116,8 @@ func GetTestnetGenesis() types.ChainConstants {
 
 	cfg.MaturityDelay = {{.MaturityDelay}}
 
-  // The genesis timestamp
-  cfg.GenesisTimestamp = types.Timestamp({{.Genesis.GenesisBlockTimestamp}})
+	// The genesis timestamp
+	cfg.GenesisTimestamp = types.Timestamp({{.Genesis.GenesisBlockTimestamp}})
 
 	cfg.TargetWindow = {{.TargetWindow}}
 

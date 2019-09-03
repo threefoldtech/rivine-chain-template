@@ -58,7 +58,7 @@ func (cmds *commands) rootCommand(*cobra.Command, []string) {
 func (cmds *commands) versionCommand(*cobra.Command, []string) {
 	var postfix string
 	switch cmds.cfg.BlockchainInfo.NetworkName {
-	{{ $key, $network := range .Blockchain.Network }}
+	{{ range $key, $network := .Blockchain.Network }}
 	case "{{ lower $key }}"
 		{{ if eq $network.NetworkType 1 }}
 		// no special prefix needed for standard-type networks

@@ -11,8 +11,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/{{.Blockchain.Owner}}/{{.Blockchain.Name}}/pkg/config" // TODO: add repo
-  {{.Blockchain.Name}}types "github.com/{{.Blockchain.Owner}}/{{.Blockchain.Name}}/pkg/types"
+	"{{.Blockchain.Repository}}/pkg/config"
+	{{.Blockchain.Name}}types "{{.Blockchain.Repository}}/pkg/types"
 	"github.com/threefoldtech/rivine/types"
 
   {{if .Blockchain.Transactions.Minting}}"github.com/threefoldtech/rivine/extensions/minting"

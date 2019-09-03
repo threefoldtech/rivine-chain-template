@@ -2,10 +2,8 @@ package config
 
 import (
 	"fmt"
-	"math/big"
 
 	"github.com/threefoldtech/rivine/build"
-	"github.com/threefoldtech/rivine/modules"
 	"github.com/threefoldtech/rivine/types"
 )
 
@@ -28,23 +26,37 @@ const (
 // chain network names
 const (
 	{{ range $key, $value := .Blockchain.Network }}
-	Network{{ title $key }} = "{{ lower $key }}"
+	NetworkName{{ title $key }} = "{{ lower $key }}"
 	{{end}}
 )
+
+{{ with $defaultnetwork := "" }}
+{{ with $defaultnetworktype := -1 }}
+
+{{ range $key, $network := .Blockchain.Network }}
+{{ if gt $network.NetworkType $defaultnetworktype }}
+$defaultnetworktype = $network.NetworkType
+$defaultnetwork = $key
+{{ end }}
+{{ end }}
+
+{{ if $defaultnetwork }}
+func GetDefaultGenesis() types.ChainConstants {
+	return Get{{ title $defaultnetwork }}Genesis()
+}
+{{end}}
 
 // GetBlockchainInfo returns the naming and versioning of tfchain.
 func GetBlockchainInfo() types.BlockchainInfo {
 	return types.BlockchainInfo{
 		Name:            TokenChainName,
-		NetworkName:     NetworkNameTest,
+		NetworkName:     NetworkName{{ title $defaultnetwork }},
 		CoinUnit:        TokenUnit,
 		ChainVersion:    Version,       // use our own blockChain/build version
 		ProtocolVersion: build.Version, // use latest available rivine protocol version
 	}
 }
 
-{{ with $defaultnetwork := "" }}
-{{ with $defaultnetworktype := -1 }}
 {{ range $key, $network := .Blockchain.Network }}
 
 {{ if gt $network.NetworkType $defaultnetworktype }}
@@ -136,14 +148,6 @@ func Get{{ title $key }}BootstrapPeers() []modules.NetAddress {
 	return types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{$network.Genesis.Authcoin | formatConditionAsString -}}")))
 }{{end}}
 
-{{end}}
-
-{{ if $defaultnetwork }}
-func GetDefaultGenesis() types.ChainConstants {
-	return Get{{ title $defaultnetwork }}Genesis()
-}
-{{end}}
-{{end}}
 {{end}}
 
 func unlockHashFromHex(hstr string) (uh types.UnlockHash) {

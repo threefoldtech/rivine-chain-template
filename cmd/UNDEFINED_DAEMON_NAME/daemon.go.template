@@ -112,7 +112,7 @@ func runDaemon(cfg ExtendedDaemonConfig, moduleIdentifiers daemon.ModuleIdentifi
 		}
 
 		var cs modules.ConsensusSet
-    {{if .Blockchain.Transactions.Minting}}var mintingPlugin    *minting.Plugin{{end}}
+		{{if .Blockchain.Transactions.Minting}}var mintingPlugin    *minting.Plugin{{end}}
 		{{if .Blockchain.Transactions.Authcoin}}var authCoinTxPlugin *authcointx.Plugin{{end}}
 
 		if moduleIdentifiers.Contains(daemon.ConsensusSetModule.Identifier()) {
@@ -134,12 +134,12 @@ func runDaemon(cfg ExtendedDaemonConfig, moduleIdentifiers daemon.ModuleIdentifi
 				}
 			}()
 
-      {{if .Blockchain.Transactions.Minting}}// register the minting extension plugin
+			{{if .Blockchain.Transactions.Minting}}// register the minting extension plugin
 			mintingPlugin = minting.NewMintingPlugin(
 				setupNetworkCfg.GenesisMintCondition,
 				{{.Blockchain.Name}}types.MinterDefinitionTxVersion,
 				{{.Blockchain.Name}}types.CoinCreationTxVersion,
-        {{if .Blockchain.Transactions.Minting.CoinDestruction}}&minting.PluginOptions{
+			{{if .Blockchain.Transactions.Minting.CoinDestruction}}&minting.PluginOptions{
 					CoinDestructionTransactionVersion: {{.Blockchain.Name}}types.CoinDestructionTxVersion,
 				},{{end}}
 			)
@@ -331,7 +331,7 @@ func runDaemon(cfg ExtendedDaemonConfig, moduleIdentifiers daemon.ModuleIdentifi
 
 type setupNetworkConfig struct {
 	NetworkConfig        daemon.NetworkConfig
-  {{if .Blockchain.Transactions.Minting}}GenesisMintCondition types.UnlockConditionProxy{{end}}
+	{{if .Blockchain.Transactions.Minting}}GenesisMintCondition types.UnlockConditionProxy{{end}}
 	{{if .Blockchain.Transactions.Authcoin}}GenesisAuthCondition types.UnlockConditionProxy{{end}}
 }
 
@@ -343,44 +343,24 @@ func setupNetwork(cfg ExtendedDaemonConfig) (setupNetworkConfig, error) {
 	// return the network configuration, based on the network name,
 	// which includes the genesis block as well as the bootstrap peers
 	switch cfg.BlockchainInfo.NetworkName {
-	case config.NetworkNameStandard:
-		return setupNetworkConfig{}, errors.New("standard net is disabled for this chain, it is not ready for production") // TODO: enable and configure
-  {{range .Blockchain.Network}}{{if eq .NetworkType 2}}case config.NetworkNameTest:
-    constants := config.GetTestnetGenesis()
-    {{if .Genesis.Minting}}genesisMintCondition := config.GetTestnetGenesisMintCondition(){{end}}
-		{{if .Genesis.Authcoin}}genesisAuthCondition := config.GetTestnetGenesisAuthCoinCondition(){{end}}
-    bootstrapPeers := cfg.BootstrapPeers
-    if len(bootstrapPeers) == 0 {
-      bootstrapPeers = config.GetTestnetBootstrapPeers()
-    }
-    // return the testnet genesis block and bootstrap peers
-    return setupNetworkConfig{
-      NetworkConfig: daemon.NetworkConfig{
-        Constants:      constants,
-        BootstrapPeers: bootstrapPeers,
-      },
-      {{if .Genesis.Minting}}GenesisMintCondition: genesisMintCondition,{{end}}
-			{{if .Genesis.Authcoin}}GenesisAuthCondition: genesisAuthCondition,{{end}}
-    }, nil{{end}}{{end}}
-  {{range .Blockchain.Network}}{{if eq .NetworkType 3}}
-  case config.NetworkNameDev:
-    constants := config.GetDevnetGenesis()
-    {{if .Genesis.Minting}}genesisMintCondition := config.GetDevnetGenesisMintCondition(){{end}}
-		{{if .Genesis.Authcoin}}genesisAuthCondition := config.GetDevnetGenesisAuthCoinCondition(){{end}}
-    bootstrapPeers := cfg.BootstrapPeers
-    if len(bootstrapPeers) == 0 {
-      bootstrapPeers = config.GetTestnetBootstrapPeers()
-    }
-    // return the testnet genesis block and bootstrap peers
-    return setupNetworkConfig{
-      NetworkConfig: daemon.NetworkConfig{
-        Constants:      constants,
-        BootstrapPeers: bootstrapPeers,
-      },
-			{{if .Genesis.Minting}}GenesisMintCondition: genesisMintCondition,{{end}}
-			{{if .Genesis.Authcoin}}GenesisAuthCondition: genesisAuthCondition,{{end}}
-    }, nil
-  {{end}}{{end}}
+	{{ range $key, $network := .Blockchain.Network }}
+	case config.NetworkName{{ lower $key }}:
+		constants := config.GetTestnetGenesis()
+		bootstrapPeers := cfg.BootstrapPeers
+		if len(bootstrapPeers) == 0 {
+			bootstrapPeers = config.Get{{ title $key }}BootstrapPeers()
+		}
+		// return the testnet genesis block and bootstrap peers
+		return setupNetworkConfig{
+			NetworkConfig: daemon.NetworkConfig{
+				Constants:      constants,
+				BootstrapPeers: bootstrapPeers,
+			},
+			{{if $network.Genesis.Minting}}GenesisMintCondition: config.Get{{ title $key }}GenesisMintCondition(),{{end}}
+			{{if $network.Genesis.Authcoin}}GenesisAuthCondition: config.Get{{ title $key }}GenesisAuthCoinCondition(),{{end}}
+		}, nil
+	{{end}}
+
 	default:
 		// network isn't recognised
 		return setupNetworkConfig{}, fmt.Errorf(

@@ -25,11 +25,11 @@ const (
 	TokenChainName = "{{.Blockchain.Name}}"
 )
 
-// chain names
+// chain network names
 const (
-	NetworkNameStandard = "standard"
-	NetworkNameTest     = "testnet"
-	NetworkNameDev      = "devnet"
+	{{ range $key, $value := .Blockchain.Network }}
+	Network{{ title $key }} = "{{ lower $key }}"
+	{{end}}
 )
 
 // GetBlockchainInfo returns the naming and versioning of tfchain.
@@ -43,213 +43,108 @@ func GetBlockchainInfo() types.BlockchainInfo {
 	}
 }
 
-// GetStandardnetGenesis explicitly sets all the required constants for the genesis block of the standard (prod) net
-func GetStandardnetGenesis() types.ChainConstants {
+{{ with $defaultnetwork := "" }}
+{{ with $defaultnetworktype := -1 }}
+{{ range $key, $network := .Blockchain.Network }}
+
+{{ if gt $network.NetworkType $defaultnetworktype }}
+$defaultnetworktype = $network.NetworkType
+$defaultnetwork = $key
+{{ end }}
+
+func Get{{ title $key }}Genesis() types.ChainConstants {
+	{{if eq $network.NetworkType 1}}
 	cfg := types.StandardnetChainConstants()
-	{{range .Blockchain.Network}}{{if eq .NetworkType 1}}
+	{{else if eq $network.NetworkType 2}}
+	cfg := types.TestnetChainConstants()
+	{{else}}
+	cfg := types.DevnetChainConstants()
+	{{end}}
+
 	// set transaction versions
+	{{if .Blockchain.transactions.default.version}}
+	cfg.DefaultTransactionVersion = types.TransactionVersion({{.Blockchain.transactions.default.version}})
+	cfg.GenesisTransactionVersion = types.TransactionVersion({{.Blockchain.transactions.default.version}})
+	{{else}}
 	cfg.DefaultTransactionVersion = types.TransactionVersionOne
 	cfg.GenesisTransactionVersion = types.TransactionVersionOne
+	{{end}}
 
 	// block time
-	cfg.BlockFrequency = {{.BlockFrequency}}
+	cfg.BlockFrequency = {{$network.BlockFrequency}}
 
 	// Time to MaturityDelay
-	cfg.MaturityDelay = {{.MaturityDelay}}
+	cfg.MaturityDelay = {{$network.MaturityDelay}}
 
 	// The genesis timestamp
-	cfg.GenesisTimestamp = types.Timestamp({{.Genesis.GenesisBlockTimestamp}})
+	cfg.GenesisTimestamp = types.Timestamp({{$network.Genesis.GenesisBlockTimestamp}})
 
 	// block window for difficulty
-	cfg.TargetWindow = {{.TargetWindow}}
+	cfg.TargetWindow = {{$network.TargetWindow}}
 
-	cfg.MaxAdjustmentUp = big.NewRat({{.MaxAdjustmentUp.Denominator}}, {{.MaxAdjustmentUp.Numerator}})
-	cfg.MaxAdjustmentDown = big.NewRat({{.MaxAdjustmentDown.Denominator}}, {{.MaxAdjustmentDown.Numerator}})
+	cfg.MaxAdjustmentUp = big.NewRat({{$network.MaxAdjustmentUp.Denominator}}, {{$network.MaxAdjustmentUp.Numerator}})
+	cfg.MaxAdjustmentDown = big.NewRat({{$network.MaxAdjustmentDown.Denominator}}, {{$network.MaxAdjustmentDown.Numerator}})
 
-	cfg.FutureThreshold = {{.FutureThreshold}}
-	cfg.ExtremeFutureThreshold = {{.ExtremeFutureThreshold}}
+	cfg.FutureThreshold = {{$network.FutureThreshold}}
+	cfg.ExtremeFutureThreshold = {{$network.ExtremeFutureThreshold}}
 
-	cfg.StakeModifierDelay = {{.StakeModifierDelay}}
+	cfg.StakeModifierDelay = {{$network.StakeModifierDelay}}
 
 	// Time it takes before transferred blockstakes can be used
-	cfg.BlockStakeAging = {{.BlockStakeAging}}
+	cfg.BlockStakeAging = {{$network.BlockStakeAging}}
 
 	// Coins you receive when you create a block
-	cfg.BlockCreatorFee = cfg.CurrencyUnits.OneCoin.Mul64({{.BlockCreatorFee}})
+	cfg.BlockCreatorFee = cfg.CurrencyUnits.OneCoin.Mul64({{$network.BlockCreatorFee}})
 
 	// Minimum transaction fee
-	cfg.MinimumTransactionFee = cfg.CurrencyUnits.OneCoin.Div64({{.MinimumTransactionFee}} * 100)
+	cfg.MinimumTransactionFee = cfg.CurrencyUnits.OneCoin.Mul64({{$network.MinimumTransactionFee}})
 
-	// Foundation receives all transactions fees in a single pool address,
-	cfg.TransactionFeeCondition = types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{ .TransactionFeePool }}")))
+	{{if $network.TransactionFeePool}}
+	cfg.TransactionFeeCondition = types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{ $network.TransactionFeePool }}")))
+	{{end}}
 
 	// no initial coins, except  1 for initial transaction fee payments
 	cfg.GenesisCoinDistribution = []types.CoinOutput{
-    {{ range .Genesis.CoinOutputs }}{
-        Value: cfg.CurrencyUnits.OneCoin.Mul64({{ .Value }}),
-        Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{.Condition | formatConditionAsString -}}"))),
-      },
-    {{ end }}
-  }
+	{{ range $network.Genesis.CoinOutputs }}{
+			Value: cfg.CurrencyUnits.OneCoin.Mul64({{ .Value }}),
+			Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{.Condition | formatConditionAsString -}}"))),
+		},
+	{{ end }}
+	}
 
 	// allocate block stakes
 	cfg.GenesisBlockStakeAllocation = []types.BlockStakeOutput{
-		{{ range .Genesis.BlockStakeOutputs }}{
+		{{ range $network.Genesis.BlockStakeOutputs }}{
 		Value:     types.NewCurrency64({{.Value}}),
 		Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{.Condition | formatConditionAsString -}}"))),
-	},
+		},
 	{{ end }}
 }
 
-  {{end}}{{end}}return cfg
+	return cfg
 }
 
-// GetTestnetGenesis explicitly sets all the required constants for the genesis block of the testnet
-func GetTestnetGenesis() types.ChainConstants {
-	cfg := types.TestnetChainConstants()
-  {{range .Blockchain.Network}}{{if eq .NetworkType 2}}
-	// set transaction versions
-	cfg.DefaultTransactionVersion = types.TransactionVersionOne
-	cfg.GenesisTransactionVersion = types.TransactionVersionOne
-
-	cfg.BlockFrequency = {{.BlockFrequency}}
-
-	cfg.MaturityDelay = {{.MaturityDelay}}
-
-	// The genesis timestamp
-	cfg.GenesisTimestamp = types.Timestamp({{.Genesis.GenesisBlockTimestamp}})
-
-	cfg.TargetWindow = {{.TargetWindow}}
-
-	cfg.MaxAdjustmentUp = big.NewRat({{.MaxAdjustmentUp.Denominator}}, {{.MaxAdjustmentUp.Numerator}})
-	cfg.MaxAdjustmentDown = big.NewRat({{.MaxAdjustmentDown.Denominator}}, {{.MaxAdjustmentDown.Numerator}})
-
-	cfg.FutureThreshold = {{.FutureThreshold}}
-	cfg.ExtremeFutureThreshold = {{.ExtremeFutureThreshold}}
-
-	cfg.StakeModifierDelay = {{.StakeModifierDelay}}
-
-	cfg.BlockStakeAging = {{.BlockStakeAging}}
-
-	cfg.BlockCreatorFee = cfg.CurrencyUnits.OneCoin.Mul64({{.BlockCreatorFee}})
-
-	cfg.MinimumTransactionFee = cfg.CurrencyUnits.OneCoin.Div64({{.MinimumTransactionFee}} * 100)
-
-
-	// allocate block stakes
-  cfg.GenesisCoinDistribution = []types.CoinOutput{
-    {{ range .Genesis.CoinOutputs }}{
-        Value: cfg.CurrencyUnits.OneCoin.Mul64({{ .Value }}),
-        Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{.Condition | formatConditionAsString -}}"))),
-      },
-    {{ end }}
-  }
-
-  // allocate block stakes
-  cfg.GenesisBlockStakeAllocation = []types.BlockStakeOutput{
-    {{ range .Genesis.BlockStakeOutputs }}{
-      Value:     types.NewCurrency64({{.Value}}),
-      Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{.Condition | formatConditionAsString -}}"))),
-    },
-    {{ end }}
-  }
-
-  {{end}}{{end}}return cfg
+func Get{{ title $key }}BootstrapPeers() []modules.NetAddress {
+	return []modules.NetAddress{
+		{{range $network.BootstrapPeers}}"{{.Address}}",
+	{{end}}
+	}
 }
 
-// GetDevnetGenesis explicitly sets all the required constants for the genesis block of the devnet
-func GetDevnetGenesis() types.ChainConstants {
-	cfg := types.DevnetChainConstants()
-  {{range .Blockchain.Network}}{{if eq .NetworkType 3}}
-	// set transaction versions
-	cfg.DefaultTransactionVersion = types.TransactionVersionOne
-	cfg.GenesisTransactionVersion = types.TransactionVersionOne
-
-	cfg.BlockFrequency = {{.BlockFrequency}}
-
-	cfg.MaturityDelay = {{.MaturityDelay}}
-
-  // The genesis timestamp
-  cfg.GenesisTimestamp = types.Timestamp({{.Genesis.GenesisBlockTimestamp}})
-
-	cfg.TargetWindow = {{.TargetWindow}}
-
-	cfg.MaxAdjustmentUp = big.NewRat({{.MaxAdjustmentUp.Denominator}}, {{.MaxAdjustmentUp.Numerator}})
-	cfg.MaxAdjustmentDown = big.NewRat({{.MaxAdjustmentDown.Denominator}}, {{.MaxAdjustmentDown.Numerator}})
-
-	cfg.FutureThreshold = {{.FutureThreshold}}
-	cfg.ExtremeFutureThreshold = {{.ExtremeFutureThreshold}}
-
-	cfg.StakeModifierDelay = {{.StakeModifierDelay}}
-
-	cfg.BlockStakeAging = {{.BlockStakeAging}}
-
-	cfg.BlockCreatorFee = cfg.CurrencyUnits.OneCoin.Mul64({{.BlockCreatorFee}})
-
-	cfg.MinimumTransactionFee = cfg.CurrencyUnits.OneCoin.Div64({{.MinimumTransactionFee}} * 100)
-
-
-	// allocate block stakes
-  cfg.GenesisCoinDistribution = []types.CoinOutput{
-    {{ range .Genesis.CoinOutputs }}{
-        Value: cfg.CurrencyUnits.OneCoin.Mul64({{ .Value }}),
-        Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{.Condition | formatConditionAsString -}}"))),
-      },
-    {{ end }}
-  }
-
-  // allocate block stakes
-  cfg.GenesisBlockStakeAllocation = []types.BlockStakeOutput{
-    {{ range .Genesis.BlockStakeOutputs }}{
-      Value:     types.NewCurrency64({{.Value}}),
-      Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{.Condition | formatConditionAsString -}}"))),
-    },
-    {{ end }}
-  }
-
-  {{end}}{{end}}return cfg
-}
-
-{{range .Blockchain.Network}}{{if eq .NetworkType 1}}// GetStandardnetGenesisAuthCoinCondition returns the genesis auth condition used for the standard (prod) net
-{{if .Genesis.Authcoin}}func GetStandardnetGenesisAuthCoinCondition() types.UnlockConditionProxy {
+{{if .Genesis.Authcoin}}func Get{{ title $key }}GenesisAuthCoinCondition() types.UnlockConditionProxy {
 	// TODO: adapt to real condition, also being multi-sig
-	return types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{.Genesis.Authcoin | formatConditionAsString -}}")))
-}{{end}}{{end}}{{end}}
+	return types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{$network.Genesis.Authcoin | formatConditionAsString -}}")))
+}{{end}}
 
-// GetStandardnetBootstrapPeers sets the standard bootstrap node addresses
-func GetStandardnetBootstrapPeers() []modules.NetAddress {
-	return []modules.NetAddress{
-    {{range .Blockchain.Network}}{{if eq .NetworkType 1}}{{range .BootstrapPeers}}"{{.Address}}",
-    {{end}}{{end}}{{end}}
-	}
+{{end}}
+
+{{ if $defaultnetwork }}
+func GetDefaultGenesis() types.ChainConstants {
+	return Get{{ title $defaultnetwork }}Genesis()
 }
-
-{{range .Blockchain.Network}}{{if eq .NetworkType 2}}// GetTestnetGenesisAuthCoinCondition returns the genesis auth condition used for the testnet
-{{if .Genesis.Authcoin}}func GetTestnetGenesisAuthCoinCondition() types.UnlockConditionProxy {
-	// @leesmet, to be changed to 1 out of 2 multisig once we have an automated
-	// faucet for this
-	return types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{.Genesis.Authcoin | formatConditionAsString -}}")))
-}{{end}}{{end}}{{end}}
-
-// GetTestnetBootstrapPeers sets the testnet bootstrap node addresses
-func GetTestnetBootstrapPeers() []modules.NetAddress {
-	return []modules.NetAddress{
-    {{range .Blockchain.Network}}{{if eq .NetworkType 2}}{{range .BootstrapPeers}}"{{.Address}}",
-    {{end}}{{end}}{{end}}
-	}
-}
-
-{{range .Blockchain.Network}}{{if eq .NetworkType 3}}// GetDevnetGenesisAuthCoinCondition returns the genesis auth condition used for the devnet
-{{if .Genesis.Authcoin}}func GetDevnetGenesisAuthCoinCondition() types.UnlockConditionProxy {
-	return types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{.Genesis.Authcoin | formatConditionAsString -}}")))
-}{{end}}{{end}}{{end}}
-
-// GetDevnetBootstrapPeers sets the default devnet bootstrap node addresses
-func GetDevnetBootstrapPeers() []modules.NetAddress {
-	return []modules.NetAddress{
-		"localhost:{{ .Blockchain.Ports.RPC }}", // TODO: add port
-	}
-}
+{{end}}
+{{end}}
+{{end}}
 
 func unlockHashFromHex(hstr string) (uh types.UnlockHash) {
 	err := uh.LoadString(hstr)

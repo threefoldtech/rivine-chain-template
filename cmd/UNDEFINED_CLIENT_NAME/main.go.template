@@ -49,27 +49,18 @@ func main() {
 	cliClient.PreRunE = func(cfg *client.Config) (*client.Config, error) {
 		if cfg == nil {
 			bchainInfo := config.GetBlockchainInfo()
-			chainConstants := config.GetStandardnetGenesis()
+			chainConstants := config.GetDefaultGenesis()
 			daemonConstants := modules.NewDaemonConstants(bchainInfo, chainConstants)
 			newCfg := client.ConfigFromDaemonConstants(daemonConstants)
 			cfg = &newCfg
 		}
 
 		switch cfg.NetworkName {
-		case config.NetworkNameStandard:
-			RegisterStandardTransactions(cliClient.CommandLineClient)
-
-			// overwrite standard network genesis block stamp,
-			// as the genesis block is way earlier than the actual first block,
-			// due to the hard reset at the bumpy/rough start
-      {{range .Blockchain.Network}}{{if eq .NetworkType 1}}cfg.GenesisBlockTimestamp = {{.Genesis.GenesisBlockTimestamp}} // timestamp of (standard) block #1{{end}}{{end}}
-		case config.NetworkNameTest:
-			RegisterTestnetTransactions(cliClient.CommandLineClient)
-
-			// seems like testnet timestamp wasn't updated last time it was reset
-      {{range .Blockchain.Network}}{{if eq .NetworkType 1}}cfg.GenesisBlockTimestamp = {{.Genesis.GenesisBlockTimestamp}} // timestamp of (standard) block #1{{end}}{{end}}
-		case config.NetworkNameDev:
-			RegisterDevnetTransactions(cliClient.CommandLineClient)
+		{{ range $key, $network := .Blockchain.Network }}
+		case config.NetworkName{{ title $key }}:
+			Register{{ title $key }}Transactions(cliClient.CommandLineClient)
+			cfg.GenesisBlockTimestamp = {{$network.Genesis.GenesisBlockTimestamp}} // timestamp of block #1
+		{{ end }}
 
 		default:
 			return nil, fmt.Errorf("Network name %q not recognized", cfg.NetworkName)

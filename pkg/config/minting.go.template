@@ -4,12 +4,10 @@ import (
 	"github.com/threefoldtech/rivine/types"
 )
 
-// GetStandardGenesisMintCondition returns the standard network  minting condition
-func GetStandardGenesisMintCondition() types.UnlockConditionProxy {
-	// TODO: define final multisig condition
-  address := ""
-	{{range .Blockchain.Network}}{{if eq .NetworkType 1}}{{if .Genesis.Minting}}address = "{{.Genesis.Minting | formatConditionAsString -}}"{{end}}
-  {{end}}{{end}}
+{{ range $key, $network := .Blockchain.Network }}{{if $network.Genesis.Minting }}
+func Get{{ title $key }}GenesisMintCondition() types.UnlockConditionProxy {
+	// TODO: support multisig conditions
+	address := "{{$network.Genesis.Minting | formatConditionAsString -}}"
 	var uh types.UnlockHash
 	if err := uh.LoadString(address); err != nil {
 		panic(err)
@@ -18,30 +16,4 @@ func GetStandardGenesisMintCondition() types.UnlockConditionProxy {
 	return condition
 }
 
-// GetTestnetGenesisMintCondition returns the testnet network  minting condition
-func GetTestnetGenesisMintCondition() types.UnlockConditionProxy {
-	// @leesmet
-  address := ""
-  {{range .Blockchain.Network}}{{if eq .NetworkType 2}}{{if .Genesis.Minting}}address = "{{.Genesis.Minting | formatConditionAsString -}}"{{end}}
-  {{end}}{{end}}
-	var uh types.UnlockHash
-	if err := uh.LoadString(address); err != nil {
-		panic(err)
-	}
-	condition := types.NewCondition(types.NewUnlockHashCondition(uh))
-	return condition
-}
-
-// GetDevnetGenesisMintCondition returns the devnet network  minting condition
-func GetDevnetGenesisMintCondition() types.UnlockConditionProxy {
-	// belongs to wallet with mnemonic:
-	// carbon boss inject cover mountain fetch fiber fit tornado cloth wing dinosaur proof joy intact fabric thumb rebel borrow poet chair network expire else
-  address := ""
-  {{range .Blockchain.Network}}{{if eq .NetworkType 3}}{{if .Genesis.Minting}}address = "{{.Genesis.Minting | formatConditionAsString -}}"{{end}}{{end}}{{end}}
-	var uh types.UnlockHash
-	if err := uh.LoadString(address); err != nil {
-		panic(err)
-	}
-	condition := types.NewCondition(types.NewUnlockHashCondition(uh))
-	return condition
-}
+{{end}}{{end}}

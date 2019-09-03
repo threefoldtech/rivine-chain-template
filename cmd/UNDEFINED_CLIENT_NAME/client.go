@@ -18,5 +18,3 @@ func NewCommandLineClient(address, name, userAgent string) (*CommandLineClient, 
 		CommandLineClient: client,
 	}, nil
 }
-
-// TODO: extend if needed

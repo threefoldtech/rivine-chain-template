@@ -12,20 +12,13 @@ import (
   {{.Blockchain.Name}}types "{{.Blockchain.Repository}}/pkg/types"
 )
 
-// RegisterStandardTransactions registers the {{.Blockchain.Name}}-specific transactions as required for the standard network.
-func RegisterStandardTransactions(cli *client.CommandLineClient) {
+
+{{ range $key, $network := .Blockchain.Network }}
+func Register{{ title $key }}Transactions(cli *client.CommandLineClient) {
 	registerTransactions(cli)
 }
 
-// RegisterTestnetTransactions registers the {{.Blockchain.Name}}-specific transactions as required for the test network.
-func RegisterTestnetTransactions(cli *client.CommandLineClient) {
-	registerTransactions(cli)
-}
-
-// RegisterDevnetTransactions registers the {{.Blockchain.Name}}-specific transactions as required for the dev network.
-func RegisterDevnetTransactions(cli *client.CommandLineClient) {
-	registerTransactions(cli)
-}
+{{ end }}
 
 func registerTransactions(cli *client.CommandLineClient) {
   {{if .Blockchain.Transactions.Minting}}{{if .Blockchain.Transactions.Minting.ConditionUpdate}}// create minting plugin client...

@@ -12,7 +12,7 @@ type ExtendedDaemonConfig struct {
 // DefaultConfig returns the default daemon configuration
 func DefaultConfig() daemon.Config {
 	cfg := daemon.DefaultConfig()
-	cfg.APIaddr = "{{.Blockchain.Ports.API}}" // TODO: define API port
-	cfg.RPCaddr = ":{{.Blockchain.Ports.RPC}}"          // TODO: define RPC port
+	cfg.APIaddr = "{{.Blockchain.Ports.API}}"
+	cfg.RPCaddr = ":{{.Blockchain.Ports.RPC}}"
 	return cfg
 }

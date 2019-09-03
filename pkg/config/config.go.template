@@ -77,9 +77,9 @@ func Get{{ title $key }}Genesis() types.ChainConstants {
 	{{end}}
 
 	// set transaction versions
-	{{if $blockchain.transactions.default.version}}
-	cfg.DefaultTransactionVersion = types.TransactionVersion({{$blockchain.transactions.default.version}})
-	cfg.GenesisTransactionVersion = types.TransactionVersion({{$blockchain.transactions.default.version}})
+	{{if $blockchain.Transactions and $blockchain.Transactions.Default}}
+	cfg.DefaultTransactionVersion = types.TransactionVersion({{$blockchain.Transactions.Default.Version}})
+	cfg.GenesisTransactionVersion = types.TransactionVersion({{$blockchain.Transactions.Default.Version}})
 	{{else}}
 	cfg.DefaultTransactionVersion = types.TransactionVersionOne
 	cfg.GenesisTransactionVersion = types.TransactionVersionOne

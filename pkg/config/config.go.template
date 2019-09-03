@@ -62,11 +62,6 @@ func GetBlockchainInfo() types.BlockchainInfo {
 
 {{ range $key, $network := .Blockchain.Network }}
 
-{{ if gt $network.NetworkType $defaultnetworktype }}
-$defaultnetworktype = $network.NetworkType
-$defaultnetwork = $key
-{{ end }}
-
 func Get{{ title $key }}Genesis() types.ChainConstants {
 	{{if eq $network.NetworkType 1}}
 	cfg := types.StandardnetChainConstants()

@@ -32,7 +32,7 @@ const (
 
 
 {{ with $blockchain := .Blockchain }}
-{{ with $defaultnetwork := "" }}
+{{ with $defaultnetwork := "undefined" }}
 {{ with $defaultnetworktype := -1 }}
 
 {{ range $key, $network := $blockchain.Network }}
@@ -42,11 +42,9 @@ $defaultnetwork = $key
 {{ end }}
 {{ end }}
 
-{{ if $defaultnetwork }}
 func GetDefaultGenesis() types.ChainConstants {
 	return Get{{ title $defaultnetwork }}Genesis()
 }
-{{end}}
 
 // GetBlockchainInfo returns the naming and versioning of tfchain.
 func GetBlockchainInfo() types.BlockchainInfo {

@@ -60,7 +60,9 @@ func GetBlockchainInfo() types.BlockchainInfo {
 {{ end }}
 {{ end }}
 
-{{ range $key, $network := .Blockchain.Network }}
+{{ with $blockchain := . }}
+
+{{ range $key, $network := $blockchain.Network }}
 
 func Get{{ title $key }}Genesis() types.ChainConstants {
 	{{if eq $network.NetworkType 1}}
@@ -72,9 +74,9 @@ func Get{{ title $key }}Genesis() types.ChainConstants {
 	{{end}}
 
 	// set transaction versions
-	{{if .Blockchain.transactions.default.version}}
-	cfg.DefaultTransactionVersion = types.TransactionVersion({{.Blockchain.transactions.default.version}})
-	cfg.GenesisTransactionVersion = types.TransactionVersion({{.Blockchain.transactions.default.version}})
+	{{if $blockchain.transactions.default.version}}
+	cfg.DefaultTransactionVersion = types.TransactionVersion({{$blockchain.transactions.default.version}})
+	cfg.GenesisTransactionVersion = types.TransactionVersion({{$blockchain.transactions.default.version}})
 	{{else}}
 	cfg.DefaultTransactionVersion = types.TransactionVersionOne
 	cfg.GenesisTransactionVersion = types.TransactionVersionOne
@@ -145,6 +147,8 @@ func Get{{ title $key }}BootstrapPeers() []modules.NetAddress {
 	// TODO: adapt to real condition, also being multi-sig
 	return types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{$network.Genesis.Authcoin | formatConditionAsString -}}")))
 }{{end}}
+
+{{end}}
 
 {{end}}
 

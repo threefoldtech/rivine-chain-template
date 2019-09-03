@@ -30,10 +30,12 @@ const (
 	{{end}}
 )
 
+
+{{ with $blockchain := .Blockchain }}
 {{ with $defaultnetwork := "" }}
 {{ with $defaultnetworktype := -1 }}
 
-{{ range $key, $network := .Blockchain.Network }}
+{{ range $key, $network := $blockchain.Network }}
 {{ if gt $network.NetworkType $defaultnetworktype }}
 $defaultnetworktype = $network.NetworkType
 $defaultnetwork = $key
@@ -59,8 +61,9 @@ func GetBlockchainInfo() types.BlockchainInfo {
 
 {{ end }}
 {{ end }}
+{{ end }}
 
-{{ with $blockchain := . }}
+{{ with $blockchain := .Blockchain }}
 
 {{ range $key, $network := $blockchain.Network }}
 

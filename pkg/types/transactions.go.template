@@ -1,8 +1,8 @@
 package types
 
+{{if .Blockchain.Transactions.Minting}}
 import "github.com/threefoldtech/rivine/types"
 
-{{if .Blockchain.Transactions.Minting}}
 const (
 	//TransactionVersionMinterDefinition is the transaction version for the   minterdefinition transaction
 	TransactionVersionMinterDefinition types.TransactionVersion = {{.Blockchain.Transactions.Minting.ConditionUpdate.Version}}
@@ -14,6 +14,8 @@ const (
 
 {{end}}
 {{if .Blockchain.Transactions.Authcoin}}// Auth Coin Tx Extension Transaction Versions
+{{if not .Blockchain.Transactions.Minting}}import "github.com/threefoldtech/rivine/types"
+{{end}}
 const (
 	TransactionVersionAuthAddressUpdate types.TransactionVersion = {{.Blockchain.Transactions.Authcoin.TransactionVersionAuthAddressUpdate.Version}}
 	TransactionVersionAuthConditionUpdate types.TransactionVersion = {{.Blockchain.Transactions.Authcoin.TransactionVersionAuthConditionUpdate.Version}}

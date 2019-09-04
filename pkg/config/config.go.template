@@ -30,19 +30,7 @@ const (
 	NetworkName{{ title $key }} = "{{ lower $key }}"
 	{{end}}
 )
-
-
-{{ with $blockchain := .Blockchain }}
-{{ with $defaultnetwork := "undefined" }}
-{{ with $defaultnetworktype := 42 }}
-
-{{ range $key, $network := $blockchain.Network }}
-{{ if lt $network.NetworkType $defaultnetworktype }}
-{{ $defaultnetworktype = $network.NetworkType }}
-{{ $defaultnetwork = $key }}
-{{ end }}
-{{ end }}
-
+{{ with $blockchain := .Blockchain }}{{ with $defaultnetwork := "undefined" }}{{ with $defaultnetworktype := 42 }}{{ range $key, $network := $blockchain.Network }}{{ if lt $network.NetworkType $defaultnetworktype }}{{ $defaultnetworktype = $network.NetworkType }}{{ $defaultnetwork = $key }}{{ end }}{{ end }}
 func GetDefaultGenesis() types.ChainConstants {
 	return Get{{ title $defaultnetwork }}Genesis()
 }
@@ -56,24 +44,10 @@ func GetBlockchainInfo() types.BlockchainInfo {
 		ChainVersion:    Version,       // use our own blockChain/build version
 		ProtocolVersion: build.Version, // use latest available rivine protocol version
 	}
-}
-
-{{ end }}
-{{ end }}
-{{ end }}
-
-{{ with $blockchain := .Blockchain }}
-
-{{ range $key, $network := $blockchain.Network }}
-
+}{{ end }}{{ end }}{{ end }}
+{{ with $blockchain := .Blockchain }}{{ range $key, $network := $blockchain.Network }}
 func Get{{ title $key }}Genesis() types.ChainConstants {
-	{{if eq $network.NetworkType 1}}
-	cfg := types.StandardnetChainConstants()
-	{{else if eq $network.NetworkType 2}}
-	cfg := types.TestnetChainConstants()
-	{{else}}
-	cfg := types.DevnetChainConstants()
-	{{end}}
+	cfg := types.{{if eq $network.NetworkType 1}}Standardnet{{else if eq $network.NetworkType 2}}Testnet{{else}}Devnet{{end}}ChainConstants()
 
 	// set transaction versions
 	cfg.DefaultTransactionVersion = types.TransactionVersion({{$blockchain.Transactions.Default.Version}})
@@ -112,31 +86,28 @@ func Get{{ title $key }}Genesis() types.ChainConstants {
 	cfg.TransactionFeeCondition = types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{ $network.TransactionFeePool }}")))
 	{{end}}
 
-	// no initial coins, except  1 for initial transaction fee payments
-	cfg.GenesisCoinDistribution = []types.CoinOutput{
-	{{ range $network.Genesis.CoinOutputs }}{
+	// allocate initial coin outputs
+	cfg.GenesisCoinDistribution = []types.CoinOutput{{{ range $network.Genesis.CoinOutputs }}
+		{
 			Value: cfg.CurrencyUnits.OneCoin{{ .Value | formatValueStringAsOneCoinCurrencyMultiplier -}},
 			Condition: {{.Condition | formatConditionAsGoString -}},
-		},
-	{{ end }}
+		},{{ end }}
 	}
 
-	// allocate block stakes
-	cfg.GenesisBlockStakeAllocation = []types.BlockStakeOutput{
-		{{ range $network.Genesis.BlockStakeOutputs }}{
+	// allocate initial block stake outputs
+	cfg.GenesisBlockStakeAllocation = []types.BlockStakeOutput{{{ range $network.Genesis.BlockStakeOutputs }}
+		{
 		Value:     types.NewCurrency64({{.Value}}),
 		Condition: {{.Condition | formatConditionAsGoString -}},
-		},
-	{{ end }}
-}
+		},{{ end }}
+	}
 
 	return cfg
 }
 
 func Get{{ title $key }}BootstrapPeers() []modules.NetAddress {
-	return []modules.NetAddress{
-		{{range $network.BootstrapPeers}}"{{.NetAddress}}",
-	{{end}}
+	return []modules.NetAddress{{{range $network.BootstrapPeers}}
+		"{{.NetAddress}}",{{end}}
 	}
 }
 
@@ -147,10 +118,7 @@ func Get{{ title $key }}BootstrapPeers() []modules.NetAddress {
 {{if .Genesis.Authcoin}}func Get{{ title $key }}GenesisAuthCoinCondition() types.UnlockConditionProxy {
 	return {{$network.Genesis.Authcoin | formatConditionAsGoString -}}
 }{{end}}
-
-{{end}}
-
-{{end}}
+{{end}}{{end}}
 
 func init() {
 	Version = build.MustParse(rawVersion)

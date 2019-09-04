@@ -39,12 +39,12 @@ func registerTransactions(cli *client.CommandLineClient) {
   {{if .Blockchain.Transactions.Authcoin}}// create coin auth tx plugin client...
 	authCoinTxCLI := authcointxcli.NewPluginConsensusClient(cli)
 	// ...and register coin auth tx types
-	types.RegisterTransactionVersion({{.Blockchain.Name}}types.TransactionVersionAuthConditionUpdateTx, authcointx.AuthConditionUpdateTransactionController{
+	types.RegisterTransactionVersion({{.Blockchain.Name}}types.TransactionVersionAuthConditionUpdate, authcointx.AuthConditionUpdateTransactionController{
 		AuthInfoGetter:     authCoinTxCLI,
-		TransactionVersion: {{.Blockchain.Name}}types.TransactionVersionAuthConditionUpdateTx,
+		TransactionVersion: {{.Blockchain.Name}}types.TransactionVersionAuthConditionUpdate,
 	})
-	types.RegisterTransactionVersion({{.Blockchain.Name}}types.TransactionVersionAuthAddressUpdateTx, authcointx.AuthAddressUpdateTransactionController{
+	types.RegisterTransactionVersion({{.Blockchain.Name}}types.TransactionVersionAuthAddressUpdate, authcointx.AuthAddressUpdateTransactionController{
 		AuthInfoGetter:     authCoinTxCLI,
-		TransactionVersion: {{.Blockchain.Name}}types.TransactionVersionAuthAddressUpdateTx,
+		TransactionVersion: {{.Blockchain.Name}}types.TransactionVersionAuthAddressUpdate,
 	}){{end}}
 }

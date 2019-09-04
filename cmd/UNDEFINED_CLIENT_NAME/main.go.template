@@ -34,7 +34,7 @@ func main() {
 		types.TransactionVersionMinterDefinition,
 		types.TransactionVersionCoinCreation,
 		{{if .Blockchain.Transactions.Minting.CoinDestruction}}&mintingcli.WalletCmdsOpts{
-			TransactionVersionCoinDestruction: types.TransactionVersionCoinDestruction,
+			CoinDestructionTxVersion: types.TransactionVersionCoinDestruction,
 		},{{else}}nil,{{end}}
 	){{end}}
 

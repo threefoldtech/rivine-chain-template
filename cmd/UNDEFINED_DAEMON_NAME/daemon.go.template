@@ -346,7 +346,7 @@ func setupNetwork(cfg ExtendedDaemonConfig) (setupNetworkConfig, error) {
 	switch cfg.BlockchainInfo.NetworkName {
 	{{ range $key, $network := .Blockchain.Network }}
 	case config.NetworkName{{ title $key }}:
-		constants := config.Get{ title $key }Genesis()
+		constants := config.Get{{ title $key }}Genesis()
 		bootstrapPeers := cfg.BootstrapPeers
 		if len(bootstrapPeers) == 0 {
 			bootstrapPeers = config.Get{{ title $key }}BootstrapPeers()

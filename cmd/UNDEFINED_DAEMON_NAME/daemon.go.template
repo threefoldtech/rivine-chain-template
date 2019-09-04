@@ -344,7 +344,7 @@ func setupNetwork(cfg ExtendedDaemonConfig) (setupNetworkConfig, error) {
 	// return the network configuration, based on the network name,
 	// which includes the genesis block as well as the bootstrap peers
 	switch cfg.BlockchainInfo.NetworkName {
-	{{ range $key, $network := .Blockchain.Network }}
+	{{ range $key, $network := .Blockchain.Networks }}
 	case config.NetworkName{{ title $key }}:
 		constants := config.Get{{ title $key }}Genesis()
 		bootstrapPeers := cfg.BootstrapPeers

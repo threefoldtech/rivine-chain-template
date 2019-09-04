@@ -3,7 +3,7 @@
 The {{ .Blockchain.Name }} Blockchain repository.
 
 ## How to use {{ .Blockchain.Binaries.Client }}
-{{$bc := .Blockchain}}{{ with index .Blockchain.Network "devnet" }}
+{{$bc := .Blockchain}}{{ with index .Blockchain.Networks "devnet" }}
 ### devnet
 
 You can run the chain easily on your computer to play with the software already.

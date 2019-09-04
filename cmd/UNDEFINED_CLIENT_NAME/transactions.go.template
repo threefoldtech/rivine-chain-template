@@ -12,7 +12,7 @@ import (
 
 	"github.com/threefoldtech/rivine/pkg/client"
 )
-{{ range $key, $network := .Blockchain.Network }}
+{{ range $key, $network := .Blockchain.Networks }}
 func Register{{ title $key }}Transactions(cli *client.CommandLineClient) {
 	registerTransactions(cli)
 }

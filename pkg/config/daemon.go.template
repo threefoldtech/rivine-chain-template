@@ -8,7 +8,7 @@ import (
 type DaemonNetworkConfig struct {
 	FoundationPoolAddress types.UnlockHash
 }
-{{ range $key, $network := .Blockchain.Network }}
+{{ range $key, $network := .Blockchain.Networks }}
 func Get{{ title $key }}DaemonNetworkConfig() DaemonNetworkConfig {
 	return DaemonNetworkConfig{
 		{{if $network.TransactionFeePool }}FoundationPoolAddress: unlockHashFromHex("{{$network.TransactionFeePool}}"),{{end}}

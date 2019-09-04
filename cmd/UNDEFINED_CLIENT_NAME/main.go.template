@@ -58,7 +58,7 @@ func main() {
 		}
 
 		switch cfg.NetworkName {
-		{{ range $key, $network := .Blockchain.Network }}
+		{{ range $key, $network := .Blockchain.Networks }}
 		case config.NetworkName{{ title $key }}:
 			Register{{ title $key }}Transactions(cliClient.CommandLineClient)
 			cfg.GenesisBlockTimestamp = {{$network.Genesis.GenesisBlockTimestamp}} // timestamp of block #1

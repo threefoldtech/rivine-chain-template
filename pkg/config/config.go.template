@@ -26,11 +26,11 @@ const (
 
 // chain network names
 const (
-	{{ range $key, $value := .Blockchain.Network }}
+	{{ range $key, $value := .Blockchain.Networks }}
 	NetworkName{{ title $key }} = "{{ lower $key }}"
 	{{end}}
 )
-{{ with $blockchain := .Blockchain }}{{ with $defaultnetwork := "undefined" }}{{ with $defaultnetworktype := 42 }}{{ range $key, $network := $blockchain.Network }}{{ if lt $network.NetworkType $defaultnetworktype }}{{ $defaultnetworktype = $network.NetworkType }}{{ $defaultnetwork = $key }}{{ end }}{{ end }}
+{{ with $blockchain := .Blockchain }}{{ with $defaultnetwork := "undefined" }}{{ with $defaultnetworktype := 42 }}{{ range $key, $network := $blockchain.Networks }}{{ if lt $network.NetworkType $defaultnetworktype }}{{ $defaultnetworktype = $network.NetworkType }}{{ $defaultnetwork = $key }}{{ end }}{{ end }}
 func GetDefaultGenesis() types.ChainConstants {
 	return Get{{ title $defaultnetwork }}Genesis()
 }
@@ -45,7 +45,7 @@ func GetBlockchainInfo() types.BlockchainInfo {
 		ProtocolVersion: build.Version, // use latest available rivine protocol version
 	}
 }{{ end }}{{ end }}{{ end }}
-{{ with $blockchain := .Blockchain }}{{ range $key, $network := $blockchain.Network }}
+{{ with $blockchain := .Blockchain }}{{ range $key, $network := $blockchain.Networks }}
 func Get{{ title $key }}Genesis() types.ChainConstants {
 	cfg := types.{{if eq $network.NetworkType 1}}Standardnet{{else if eq $network.NetworkType 2}}Testnet{{else}}Devnet{{end}}ChainConstants()
 

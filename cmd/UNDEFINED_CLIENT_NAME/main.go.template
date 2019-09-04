@@ -8,9 +8,11 @@ import (
 	"github.com/threefoldtech/rivine/pkg/daemon"
 
 	"{{.Blockchain.Repository}}/pkg/config"
-	"{{.Blockchain.Repository}}/pkg/types"
-	{{if .Blockchain.Transactions.Minting}}mintingcli "github.com/threefoldtech/rivine/extensions/minting/client"{{end}}
-	{{if .Blockchain.Transactions.Authcoin}}authcointxcli "github.com/threefoldtech/rivine/extensions/authcointx/client"{{end}}
+
+	{{if .Blockchain.Transactions.Minting}}"{{.Blockchain.Repository}}/pkg/types"
+	mintingcli "github.com/threefoldtech/rivine/extensions/minting/client"{{end}}
+	{{if .Blockchain.Transactions.Authcoin}}{{if not .Blockchain.Transactions.Minting}}"{{.Blockchain.Repository}}/pkg/types"
+	{{end}}authcointxcli "github.com/threefoldtech/rivine/extensions/authcointx/client"{{end}}
 
 	"github.com/threefoldtech/rivine/modules"
 	"github.com/threefoldtech/rivine/pkg/client"

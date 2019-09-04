@@ -1,15 +1,16 @@
 package main
 
 import (
-	{{if .Blockchain.Transactions.Minting}}"github.com/threefoldtech/rivine/extensions/minting"
-  mintingcli "github.com/threefoldtech/rivine/extensions/minting/client"{{end}}
-  {{if .Blockchain.Transactions.Authcoin}}"github.com/threefoldtech/rivine/extensions/authcointx"
+	{{if .Blockchain.Transactions.Minting}}"github.com/threefoldtech/rivine/types"
+	{{.Blockchain.Name}}types "{{.Blockchain.Repository}}/pkg/types"
+	"github.com/threefoldtech/rivine/extensions/minting"
+	mintingcli "github.com/threefoldtech/rivine/extensions/minting/client"{{end}}
+	{{if .Blockchain.Transactions.Authcoin}}{{if not .Blockchain.Transactions.Minting}}"github.com/threefoldtech/rivine/types"
+	{{.Blockchain.Name}}types "{{.Blockchain.Repository}}/pkg/types"
+	{{end}}"github.com/threefoldtech/rivine/extensions/authcointx"
 	authcointxcli "github.com/threefoldtech/rivine/extensions/authcointx/client"{{end}}
 
 	"github.com/threefoldtech/rivine/pkg/client"
-	"github.com/threefoldtech/rivine/types"
-
-  {{.Blockchain.Name}}types "{{.Blockchain.Repository}}/pkg/types"
 )
 
 {{ range $key, $network := .Blockchain.Network }}

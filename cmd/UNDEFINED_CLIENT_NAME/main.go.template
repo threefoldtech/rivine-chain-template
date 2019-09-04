@@ -41,8 +41,8 @@ func main() {
 	{{if .Blockchain.Transactions.Authcoin}}authcointxcli.CreateExploreAuthCoinInfoCmd(cliClient.CommandLineClient)
 	authcointxcli.CreateWalletCmds(
 		cliClient.CommandLineClient,
-		types.TransactionVersionAuthConditionUpdateTx,
-		types.TransactionVersionAuthAddressUpdateTx,
+		types.TransactionVersionAuthConditionUpdate,
+		types.TransactionVersionAuthAddressUpdate,
 	){{end}}
 
 	// define preRun function

@@ -2,18 +2,19 @@ package types
 
 import "github.com/threefoldtech/rivine/types"
 
+{{if .Blockchain.Transactions.Minting}}
 const (
-	//MinterDefinitionTxVersion is the transaction version for the   minterdefinition transaction
-	{{if .Blockchain.Transactions.Minting}}MinterDefinitionTxVersion types.TransactionVersion = {{.Blockchain.Transactions.Minting.ConditionUpdate.Version}}
-	//CoinCreationTxVersion is the transaction version for the coin creation transaction
-	CoinCreationTxVersion = {{.Blockchain.Transactions.Minting.CoinCreation.Version}}
-	{{if .Blockchain.Transactions.Minting.CoinDestruction}}//CoinDestructionTxVersion is the transaction version for the coin destruction transaction
-	CoinDestructionTxVersion = {{.Blockchain.Transactions.Minting.CoinDestruction.Version}}{{end}}
-  {{end}}
+	//TransactionVersionMinterDefinition is the transaction version for the   minterdefinition transaction
+	TransactionVersionMinterDefinition types.TransactionVersion = {{.Blockchain.Transactions.Minting.ConditionUpdate.Version}}
+	//TransactionVersionCoinCreation is the transaction version for the coin creation transaction
+	TransactionVersionCoinCreation types.TransactionVersion = {{.Blockchain.Transactions.Minting.CoinCreation.Version}}
+	{{if .Blockchain.Transactions.Minting.CoinDestruction}}//TransactionVersionCoinDestruction is the transaction version for the coin destruction transaction
+	TransactionVersionCoinDestruction types.TransactionVersion = {{.Blockchain.Transactions.Minting.CoinDestruction.Version}}{{end}}
 )
 
+{{end}}
 {{if .Blockchain.Transactions.Authcoin}}// Auth Coin Tx Extension Transaction Versions
 const (
-	TransactionVersionAuthAddressUpdateTx types.TransactionVersion = {{.Blockchain.Transactions.Authcoin.TransactionVersionAuthAddressUpdateTx.Version}}
-	TransactionVersionAuthConditionUpdateTx = {{.Blockchain.Transactions.Authcoin.TransactionVersionAuthConditionUpdateTx.Version}}
+	TransactionVersionAuthAddressUpdate types.TransactionVersion = {{.Blockchain.Transactions.Authcoin.TransactionVersionAuthAddressUpdate.Version}}
+	TransactionVersionAuthConditionUpdate types.TransactionVersion = {{.Blockchain.Transactions.Authcoin.TransactionVersionAuthConditionUpdate.Version}}
 ){{end}}

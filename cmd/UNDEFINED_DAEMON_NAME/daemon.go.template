@@ -136,10 +136,10 @@ func runDaemon(cfg ExtendedDaemonConfig, moduleIdentifiers daemon.ModuleIdentifi
 			{{if .Blockchain.Transactions.Minting}}// register the minting extension plugin
 			mintingPlugin = minting.NewMintingPlugin(
 				setupNetworkCfg.GenesisMintCondition,
-				{{.Blockchain.Name}}types.MinterDefinitionTxVersion,
-				{{.Blockchain.Name}}types.CoinCreationTxVersion,
+				{{.Blockchain.Name}}types.TransactionVersionMinterDefinition,
+				{{.Blockchain.Name}}types.TransactionVersionCoinCreation,
 			{{if .Blockchain.Transactions.Minting.CoinDestruction}}&minting.PluginOptions{
-					CoinDestructionTransactionVersion: {{.Blockchain.Name}}types.CoinDestructionTxVersion,
+					CoinDestructionTransactionVersion: {{.Blockchain.Name}}types.TransactionVersionCoinDestruction,
 				},{{end}}
 			)
 			err = cs.RegisterPlugin(ctx, "minting", mintingPlugin)
@@ -160,8 +160,8 @@ func runDaemon(cfg ExtendedDaemonConfig, moduleIdentifiers daemon.ModuleIdentifi
 			// > NOTE: this also overwrites the standard tx controllers!!!!
 			authCoinTxPlugin = authcointx.NewPlugin(
 				setupNetworkCfg.GenesisAuthCondition,
-				{{.Blockchain.Name}}types.TransactionVersionAuthAddressUpdateTx,
-				{{.Blockchain.Name}}types.TransactionVersionAuthConditionUpdateTx,
+				{{.Blockchain.Name}}types.TransactionVersionAuthAddressUpdate,
+				{{.Blockchain.Name}}types.TransactionVersionAuthConditionUpdate,
 				nil, // no custom opts
 			)
 			err = cs.RegisterPlugin(ctx, "authcointx", authCoinTxPlugin)

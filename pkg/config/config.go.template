@@ -117,7 +117,7 @@ func Get{{ title $key }}Genesis() types.ChainConstants {
 	cfg.GenesisCoinDistribution = []types.CoinOutput{
 	{{ range $network.Genesis.CoinOutputs }}{
 			Value: cfg.CurrencyUnits.OneCoin.Mul64({{ .Value }}),
-			Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{.Condition | formatConditionAsString -}}"))),
+			Condition: {{.Condition | formatConditionAsGoString -}},
 		},
 	{{ end }}
 	}
@@ -126,7 +126,7 @@ func Get{{ title $key }}Genesis() types.ChainConstants {
 	cfg.GenesisBlockStakeAllocation = []types.BlockStakeOutput{
 		{{ range $network.Genesis.BlockStakeOutputs }}{
 		Value:     types.NewCurrency64({{.Value}}),
-		Condition: types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{.Condition | formatConditionAsString -}}"))),
+		Condition: {{.Condition | formatConditionAsGoString -}},
 		},
 	{{ end }}
 }
@@ -142,21 +142,12 @@ func Get{{ title $key }}BootstrapPeers() []modules.NetAddress {
 }
 
 {{if .Genesis.Authcoin}}func Get{{ title $key }}GenesisAuthCoinCondition() types.UnlockConditionProxy {
-	// TODO: adapt to real condition, also being multi-sig
-	return types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{$network.Genesis.Authcoin | formatConditionAsString -}}")))
+	return {{$network.Genesis.Authcoin | formatConditionAsGoString -}}
 }{{end}}
 
 {{end}}
 
 {{end}}
-
-func unlockHashFromHex(hstr string) (uh types.UnlockHash) {
-	err := uh.LoadString(hstr)
-	if err != nil {
-		panic(fmt.Sprintf("func unlockHashFromHex(%s) failed: %v", hstr, err))
-	}
-	return
-}
 
 func init() {
 	Version = build.MustParse(rawVersion)

@@ -1,5 +1,6 @@
 package main
 
+{{if .Blockchain.Transactions.Minting or .Blockchain.Transactions.Authcoin }}
 import (
 	{{if .Blockchain.Transactions.Minting}}"github.com/threefoldtech/rivine/extensions/minting"
   mintingcli "github.com/threefoldtech/rivine/extensions/minting/client"{{end}}
@@ -11,7 +12,7 @@ import (
 
   {{.Blockchain.Name}}types "{{.Blockchain.Repository}}/pkg/types"
 )
-
+{{end}}
 
 {{ range $key, $network := .Blockchain.Network }}
 func Register{{ title $key }}Transactions(cli *client.CommandLineClient) {

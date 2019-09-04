@@ -140,6 +140,10 @@ func Get{{ title $key }}BootstrapPeers() []modules.NetAddress {
 	}
 }
 
+{{if $network.Genesis.Minting }}func Get{{ title $key }}GenesisMintCondition() types.UnlockConditionProxy {
+	return {{$network.Genesis.Minting | formatConditionAsGoString -}}
+}{{end}}
+
 {{if .Genesis.Authcoin}}func Get{{ title $key }}GenesisAuthCoinCondition() types.UnlockConditionProxy {
 	return {{$network.Genesis.Authcoin | formatConditionAsGoString -}}
 }{{end}}

@@ -87,7 +87,7 @@ func Get{{ title $key }}Genesis() types.ChainConstants {
 	{{end}}
 
 	// allocate initial coin outputs
-	cfg.GenesisCoinDistribution = []types.CoinOutput{{{ range $network.Genesis.CoinOutputs }}
+	cfg.GenesisCoinDistribution = []types.CoinOutput{ {{ range $network.Genesis.CoinOutputs }}
 		{
 			Value: cfg.CurrencyUnits.OneCoin{{ .Value | formatValueStringAsOneCoinCurrencyMultiplier -}},
 			Condition: {{.Condition | formatConditionAsGoString -}},
@@ -95,7 +95,7 @@ func Get{{ title $key }}Genesis() types.ChainConstants {
 	}
 
 	// allocate initial block stake outputs
-	cfg.GenesisBlockStakeAllocation = []types.BlockStakeOutput{{{ range $network.Genesis.BlockStakeOutputs }}
+	cfg.GenesisBlockStakeAllocation = []types.BlockStakeOutput{ {{ range $network.Genesis.BlockStakeOutputs }}
 		{
 		Value:     types.NewCurrency64({{.Value}}),
 		Condition: {{.Condition | formatConditionAsGoString -}},

@@ -103,10 +103,10 @@ func Get{{ title $key }}Genesis() types.ChainConstants {
 	cfg.BlockStakeAging = {{$network.BlockStakeAging}}
 
 	// Coins you receive when you create a block
-	cfg.BlockCreatorFee = cfg.CurrencyUnits.OneCoin.Mul64({{$network.BlockCreatorFee}})
+	cfg.BlockCreatorFee = cfg.CurrencyUnits.OneCoin{{$network.BlockCreatorFee | formatValueStringAsOneCoinCurrencyMultiplier -}}
 
 	// Minimum transaction fee
-	cfg.MinimumTransactionFee = cfg.CurrencyUnits.OneCoin.Mul64({{$network.MinimumTransactionFee}})
+	cfg.MinimumTransactionFee = cfg.CurrencyUnits.OneCoin{{$network.MinimumTransactionFee | formatValueStringAsOneCoinCurrencyMultiplier -}}
 
 	{{if $network.TransactionFeePool}}
 	cfg.TransactionFeeCondition = types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{ $network.TransactionFeePool }}")))
@@ -115,7 +115,7 @@ func Get{{ title $key }}Genesis() types.ChainConstants {
 	// no initial coins, except  1 for initial transaction fee payments
 	cfg.GenesisCoinDistribution = []types.CoinOutput{
 	{{ range $network.Genesis.CoinOutputs }}{
-			Value: cfg.CurrencyUnits.OneCoin.Mul64({{ .Value }}),
+			Value: cfg.CurrencyUnits.OneCoin{{ .Value | formatValueStringAsOneCoinCurrencyMultiplier -}},
 			Condition: {{.Condition | formatConditionAsGoString -}},
 		},
 	{{ end }}

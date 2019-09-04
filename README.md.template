@@ -30,9 +30,9 @@ As this wallet is recovered as a plain wallet it does not have to be unlocked an
 $ {{ $bc.Binaries.Client }} wallet
 Wallet status:
 Encrypted, Unlocked
-Confirmed Balance:   100006530 GFT
-Locked Balance:      0 GFT
-Unconfirmed Delta:   + 0 GFT
+Confirmed Balance:   100006530 {{ $bc.Currency.Unit }}
+Locked Balance:      0 {{ $bc.Currency.Unit }}
+Unconfirmed Delta:   + 0 {{ $bc.Currency.Unit }}
 BlockStakes:         3000 BS
 ```
 {{ end }}

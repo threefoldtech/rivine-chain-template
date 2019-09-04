@@ -31,11 +31,11 @@ func main() {
 	// add cli wallet extension commands
 	mintingcli.CreateWalletCmds(
 		cliClient.CommandLineClient,
-		types.MinterDefinitionTxVersion,
-		types.CoinCreationTxVersion,
+		types.TransactionVersionMinterDefinition,
+		types.TransactionVersionCoinCreation,
 		{{if .Blockchain.Transactions.Minting.CoinDestruction}}&mintingcli.WalletCmdsOpts{
-			CoinDestructionTxVersion: types.CoinDestructionTxVersion,
-		},{{end}}
+			TransactionVersionCoinDestruction: types.TransactionVersionCoinDestruction,
+		},{{else}}nil,{{end}}
 	){{end}}
 
 	{{if .Blockchain.Transactions.Authcoin}}authcointxcli.CreateExploreAuthCoinInfoCmd(cliClient.CommandLineClient)

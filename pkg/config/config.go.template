@@ -34,10 +34,10 @@ const (
 
 {{ with $blockchain := .Blockchain }}
 {{ with $defaultnetwork := "undefined" }}
-{{ with $defaultnetworktype := -1 }}
+{{ with $defaultnetworktype := 42 }}
 
 {{ range $key, $network := $blockchain.Network }}
-{{ if gt $network.NetworkType $defaultnetworktype }}
+{{ if lt $network.NetworkType $defaultnetworktype }}
 {{ $defaultnetworktype = $network.NetworkType }}
 {{ $defaultnetwork = $key }}
 {{ end }}

@@ -135,7 +135,7 @@ func Get{{ title $key }}Genesis() types.ChainConstants {
 
 func Get{{ title $key }}BootstrapPeers() []modules.NetAddress {
 	return []modules.NetAddress{
-		{{range $network.BootstrapPeers}}"{{.Address}}",
+		{{range $network.BootstrapPeers}}"{{.NetAddress}}",
 	{{end}}
 	}
 }

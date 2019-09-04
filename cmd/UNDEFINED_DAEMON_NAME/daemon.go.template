@@ -11,13 +11,15 @@ import (
 	"time"
 
 	"{{.Blockchain.Repository}}/pkg/config"
-	{{.Blockchain.Name}}types "{{.Blockchain.Repository}}/pkg/types"
-	"github.com/threefoldtech/rivine/types"
 
-  {{if .Blockchain.Transactions.Minting}}"github.com/threefoldtech/rivine/extensions/minting"
+	{{if .Blockchain.Transactions.Minting}}{{.Blockchain.Name}}types "{{.Blockchain.Repository}}/pkg/types"
+	"github.com/threefoldtech/rivine/types"
+	"github.com/threefoldtech/rivine/extensions/minting"
 	mintingapi "github.com/threefoldtech/rivine/extensions/minting/api"{{end}}
 
-	{{if .Blockchain.Transactions.Authcoin}}"github.com/threefoldtech/rivine/extensions/authcointx"
+	{{if .Blockchain.Transactions.Authcoin}}{{if not .Blockchain.Transactions.Minting}}{{.Blockchain.Name}}types "{{.Blockchain.Repository}}/pkg/types"
+	"github.com/threefoldtech/rivine/types"
+	{{end}}"github.com/threefoldtech/rivine/extensions/authcointx"
 	authcointxapi "github.com/threefoldtech/rivine/extensions/authcointx/api"{{end}}
 
 	"github.com/julienschmidt/httprouter"

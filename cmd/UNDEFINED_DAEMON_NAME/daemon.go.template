@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -344,7 +343,7 @@ func setupNetwork(cfg ExtendedDaemonConfig) (setupNetworkConfig, error) {
 	// which includes the genesis block as well as the bootstrap peers
 	switch cfg.BlockchainInfo.NetworkName {
 	{{ range $key, $network := .Blockchain.Network }}
-	case config.NetworkName{{ lower $key }}:
+	case config.NetworkName{{ title $key }}:
 		constants := config.GetTestnetGenesis()
 		bootstrapPeers := cfg.BootstrapPeers
 		if len(bootstrapPeers) == 0 {

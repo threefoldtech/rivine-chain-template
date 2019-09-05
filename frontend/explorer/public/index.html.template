@@ -11,13 +11,15 @@
 	<link rel='stylesheet' href='css/grids-responsive-min.css'>
 	<link rel='stylesheet' href='css/main.css?version=0'>
 
-	<link rel='shortcut icon' type='image/x-icon' href='/assets/icon.ico'> <!-- TODO: ADD FAVICON -->
+	<!-- icon made by https://www.flaticon.com/authors/freepik -->
+	<link rel='shortcut icon' type='image/x-icon' href='/assets/icon.ico'>
 </head>
 
 <body>
 <div class='content'>
 	<div class='pure-menu pure-menu-horizontal header'>
-		<a href='index.html' class='pure-menu-heading'><img src='assets/icon.png' width='128px'></a> <!-- TODO: ADD LOGO -->
+		<!-- icon made by https://www.flaticon.com/authors/freepik -->
+		<a href='index.html' class='pure-menu-heading'><img src='assets/icon.png' width='128px'></a>
 		<a href='/graphs.html' class='graph-link pure-menu-heading'>graphs</a>
 	</div>
 

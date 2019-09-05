@@ -248,7 +248,6 @@ function appendV1Transaction(infoBody, explorerTransaction, confirmed) {
 				case 3:
 					f = addV1T3Input;
 					break;
-				// TODO: support extra inputs if needed
 				default:
 					continue;
 			}
@@ -278,7 +277,6 @@ function appendV1Transaction(infoBody, explorerTransaction, confirmed) {
 				case 4:
 					f = addV1T4Output;
 					break;
-					// TODO: support extra outputs if needed
 				default:
 					continue;
 			}
@@ -304,7 +302,6 @@ function appendV1Transaction(infoBody, explorerTransaction, confirmed) {
 				case 3:
 					f = addV1T3Input;
 					break;
-				// TODO: support extra inputs if needed
 			}
 			f(infoBody, explorerTransaction, i, 'blockstakes');
 		}
@@ -325,7 +322,6 @@ function appendV1Transaction(infoBody, explorerTransaction, confirmed) {
 				case 3:
 					f = addV1T3Output;
 					break;
-				// TODO: support extra outputs if needed
 			}
 			var outputTable = createStatsTable()
 			f(ctx, outputTable, explorerTransaction, i, 'blockstakes');
@@ -1326,7 +1322,6 @@ function appendUnlockHashTransactionElements(domParent, hash, explorerHash, addr
 							case 4:
 								f = addV1T4Output;
 								break;
-							// TODO: support extra outputs if needed
 							default:
 								// ignore unknown
 								continue;
@@ -1430,10 +1425,6 @@ function appendUnlockHashTransactionElements(domParent, hash, explorerHash, addr
 		linkHash(doms[2], lastSpendTxID);
 	}
 
-	// TODO: Compile the list of file contracts and revisions that use the
-	// unlock hash, and that have the unlock hash somewhere in the payout
-	// scheme.
-
 	// Compile a set of transactions that have siafund outputs featuring
 	// the hash, along with the corresponding siafund output ids. Later,
 	// the transactions will be scanned again for siafund inputs sharing
@@ -1513,7 +1504,6 @@ function appendUnlockHashTransactionElements(domParent, hash, explorerHash, addr
 							case 4:
 								f = addV1T4Output;
 								break;
-							// TODO: support extra outputs if needed
 							default:
 								// ignore unknown
 								continue;
@@ -1885,7 +1875,6 @@ function appendCoinOutputTables(infoBody, hash, explorerHash) {
 							case 4:
 								f = addV1T4Output;
 								break;
-							// TODO: support extra outputs if needed
 							default:
 								// ignore unknown
 								continue;

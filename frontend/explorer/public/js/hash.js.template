@@ -358,7 +358,7 @@ function appendV1Transaction(infoBody, explorerTransaction, confirmed) {
 
 // Minting Transactions
 
-unction appendV{{ .ConditionUpdate.Version }}Transaction(infoBody, explorerTransaction, confirmed) {
+function appendV{{ .ConditionUpdate.Version }}Transaction(infoBody, explorerTransaction, confirmed) {
 	var ctx = getBlockchainContext();
 
 	var table = createStatsTable();
@@ -1630,7 +1630,7 @@ function appendUnlockHashTables(domParent, hash, explorerHash) {
 			hashTitle = "Multisig Wallet Address";
 			addressLabel = "Multisig Address";
 			break;
-	}
+	}{{ if .Blockchain.Transactions.Authcoin }}
 	// auth authentication state
 	var authStatus = fetchCurrentAddressAuthStatus(hash);
 	var authStatusElement = null;
@@ -1645,11 +1645,11 @@ function appendUnlockHashTables(domParent, hash, explorerHash) {
 	}
 	var spanAuthStatusElement = document.createElement('span');
 	spanAuthStatusElement.appendChild(document.createTextNode(' '));
-	spanAuthStatusElement.appendChild(authStatusElement);
-	// add title (with auth state)
+	spanAuthStatusElement.appendChild(authStatusElement); {{ end }}
+	// add title {{ if .Blockchain.Transactions.Authcoin }}(with auth state){{ end }}
 	var titleHolder = document.createElement('h2');
-	titleHolder.appendChild(document.createTextNode(hashTitle));
-	titleHolder.appendChild(spanAuthStatusElement);
+	titleHolder.appendChild(document.createTextNode(hashTitle));{{ if .Blockchain.Transactions.Authcoin }}
+	titleHolder.appendChild(spanAuthStatusElement);{{ end }}
 	domParent.appendChild(titleHolder);
 	// add rest of content
 	var addressInfoTable = createStatsTable();
@@ -2268,7 +2268,7 @@ function fetchHashInfo(hash) {
 		return 'error';
 	}
 	return JSON.parse(request.responseText);
-}
+}{{ if .Blockchain.Transactions.Authcoin }}
 
 // fetchCurrentAddressAuthStatus queries the explorer for auth status info at the current block height
 function fetchCurrentAddressAuthStatus(address) {
@@ -2282,6 +2282,7 @@ function fetchCurrentAddressAuthStatus(address) {
 	resp = JSON.parse(request.responseText) || {};
 	return resp.auth || false;
 }
+{{ end }}
 
 // parseHashQuery parses the query string in the URL and loads the block
 // that makes sense based on the result.

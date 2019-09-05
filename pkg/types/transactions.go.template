@@ -15,6 +15,6 @@ const (
 
 {{end}}// Auth Coin Tx Extension Transaction Versions
 const (
-	TransactionVersionAuthAddressUpdate types.TransactionVersion = {{.Blockchain.Transactions.Authcoin.TransactionVersionAuthAddressUpdate.Version}}
-	TransactionVersionAuthConditionUpdate types.TransactionVersion = {{.Blockchain.Transactions.Authcoin.TransactionVersionAuthConditionUpdate.Version}}
+	TransactionVersionAuthAddressUpdate types.TransactionVersion = {{.Blockchain.Transactions.Authcoin.AuthAddressUpdate.Version}}
+	TransactionVersionAuthConditionUpdate types.TransactionVersion = {{.Blockchain.Transactions.Authcoin.AuthConditionUpdate.Version}}
 ){{end}}

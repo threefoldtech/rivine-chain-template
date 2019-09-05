@@ -261,7 +261,7 @@ func runDaemon(cfg ExtendedDaemonConfig, moduleIdentifiers daemon.ModuleIdentifi
 				}
 			}()
 
-      {{if .Blockchain.Transactions.Minting}}mintingapi.RegisterExplorerMintingHTTPHandlers(router, mintingPlugin){{end}}
+			{{if .Blockchain.Transactions.Minting}}mintingapi.RegisterExplorerMintingHTTPHandlers(router, mintingPlugin){{end}}
 			{{if .Blockchain.Transactions.Authcoin}}authcointxapi.RegisterExplorerAuthCoinHTTPHandlers(router, authCoinTxPlugin){{end}}
 		}
 

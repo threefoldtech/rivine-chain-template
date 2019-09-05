@@ -1,8 +1,12 @@
-http://explorer.something.com {
-    redir https://explorer.something.com
+{{ with .Frontend.Caddy }}http://{{ .DNS }} {
+    redir https://{{ .DNS }}
 }
 
-https://explorer.something.com {
+https://{{ .DNS }} { {{ else }}http://explorer.example.com {
+    redir https://explorer.example.com
+}
+
+https://explorer.example.com { {{ end }}
     root ../public
 
     header / {
@@ -20,5 +24,5 @@ https://explorer.something.com {
     }
 
     log stdout
-    tls support@something.com
+    {{ with .Frontend.Caddy }}{{ if .TLS }}tls {{ .TLS }}{{ else }}tls support@example.com{{ end }}{{ else }}tls support@example.com{{ end }}
 }

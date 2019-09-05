@@ -22,7 +22,7 @@ function appendTransactionStatistics(infoBody, explorerTransaction, confirmed) {
 			break;
 		{{ end }}{{ end }}
 
-		{{ with .Blockchain.Transactions.AuthCoin }}
+		{{ with .Blockchain.Transactions.Authcoin }}
 		// AuthCoin Transactions
 		case {{ .AddressUpdate.Version }}: // Address Update Tx
 			appendV{{ .AddressUpdate.Version }}Transaction(infoBody, explorerTransaction, confirmed);

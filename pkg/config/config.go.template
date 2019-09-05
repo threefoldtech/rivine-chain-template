@@ -53,6 +53,10 @@ func Get{{ title $key }}Genesis() types.ChainConstants {
 	cfg.DefaultTransactionVersion = types.TransactionVersion({{$blockchain.Transactions.Default.Version}})
 	cfg.GenesisTransactionVersion = types.TransactionVersion({{$blockchain.Transactions.Default.Version}})
 
+	// size limits
+	cfg.BlockSizeLimit = {{ $network.BlockSizeLimit }}
+	cfg.ArbitraryDataSizeLimit = {{ $network.ArbitraryDataSizeLimit }}
+
 	// block time
 	cfg.BlockFrequency = {{$network.BlockFrequency}}
 
@@ -61,6 +65,8 @@ func Get{{ title $key }}Genesis() types.ChainConstants {
 
 	// The genesis timestamp
 	cfg.GenesisTimestamp = types.Timestamp({{$network.Genesis.GenesisBlockTimestamp}})
+
+	cfg.MedianTimestampWindow = {{$network.MedianTimestampWindow}}
 
 	// block window for difficulty
 	cfg.TargetWindow = {{$network.TargetWindow}}
@@ -84,8 +90,15 @@ func Get{{ title $key }}Genesis() types.ChainConstants {
 
 	{{if $network.TransactionFeePool}}
 	cfg.TransactionFeeCondition = types.NewCondition(types.NewUnlockHashCondition(unlockHashFromHex("{{ $network.TransactionFeePool }}")))
-	{{end}}
+	{{end}}{{ if $network.TransactionPool }}
 
+	// Set Transaction Pool config
+	cfg.TransactionPool = types.TransactionPoolConstants{
+		TransactionSizeLimit:    {{ $network.TransactionPool.TransactionSizeLimit }},
+		TransactionSetSizeLimit: {{ $network.TransactionPool.TransactionSetSizeLimit }},
+		PoolSizeLimit:           {{ $network.TransactionPool.PoolSizeLimit }},
+	}
+{{ end }}
 	// allocate initial coin outputs
 	cfg.GenesisCoinDistribution = []types.CoinOutput{ {{ range $network.Genesis.CoinOutputs }}
 		{

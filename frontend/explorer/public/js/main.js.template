@@ -396,7 +396,7 @@ function txVersionName(version) {
 			return "Burn Transaction";
 		{{ end }}{{ end }}
 
-		{{ with .Blockchain.Transaction.Authcoin }}
+		{{ with .Blockchain.Transactions.Authcoin }}
 		case {{ .AddressUpdate.Version }}:
 			return "Address Authentication Update";
 		case {{ .ConditionUpdate.Version }}:

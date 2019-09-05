@@ -1,12 +1,8 @@
-{{ if and .Frontend .Frontend.Caddy .Frontend.Caddy.DNS }}http://{{ .Frontend.Caddy.DNS }} {
-    redir https://{{ .Frontend.Caddy.DNS }}
+{{ with $root := . }}{{ with $dns := "explorer.example.com" }}{{ with $tls := "support@example.com" }}{{ if $root.Frontend }}{{ if $root.Frontend.Caddy }}{{ if $root.Frontend.Caddy.DNS }}{{ $dns = $root.Frontend.Caddy.DNS }}{{ end }}{{ if $root.Frontend.Caddy.TLS }}{{ $tls = $root.Frontend.Caddy.TLS }}{{ end }}{{ end }}{{ end }}http://{{ $dns }} {
+    redir https://{{ $dns }}
 }
 
-https://{{ .Frontend.Caddy.DNS }} { {{ else }}http://explorer.example.com {
-    redir https://explorer.example.com
-}
-
-https://explorer.example.com { {{ end }}
+https://{{ $dns }} {
     root ../public
 
     header / {
@@ -15,14 +11,14 @@ https://explorer.example.com { {{ end }}
         Access-Control-Allow-Headers  *
     }
 
-    proxy /explorer localhost:{{.Blockchain.Ports.API}} {
+    proxy /explorer localhost:{{$root.Blockchain.Ports.API}} {
         header_upstream User-Agent Rivine-Agent
     }
 
-    proxy /transactionpool/transactions localhost:{{.Blockchain.Ports.API}} {
+    proxy /transactionpool/transactions localhost:{{$root.Blockchain.Ports.API}} {
         header_upstream User-Agent Rivine-Agent
     }
 
     log stdout
-    {{ if and .Frontend .Frontend.Caddy .Frontend.Caddy.TLS }}tls {{ .Frontend.Caddy.TLS }}{{ else }}tls support@example.com{{ end }}
-}
+    tls {{ $tls }}
+}{{ end }}{{ end }}{{ end }}

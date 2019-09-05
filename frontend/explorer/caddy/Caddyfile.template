@@ -1,8 +1,8 @@
-{{ with .Frontend.Caddy }}http://{{ .DNS }} {
-    redir https://{{ .DNS }}
+{{ if and .Frontend .Frontend.Caddy .Frontend.Caddy.DNS }}http://{{ .Frontend.Caddy.DNS }} {
+    redir https://{{ .Frontend.Caddy.DNS }}
 }
 
-https://{{ .DNS }} { {{ else }}http://explorer.example.com {
+https://{{ .Frontend.Caddy.DNS }} { {{ else }}http://explorer.example.com {
     redir https://explorer.example.com
 }
 
@@ -24,5 +24,5 @@ https://explorer.example.com { {{ end }}
     }
 
     log stdout
-    {{ with .Frontend.Caddy }}{{ if .TLS }}tls {{ .TLS }}{{ else }}tls support@example.com{{ end }}{{ else }}tls support@example.com{{ end }}
+    {{ if and .Frontend .Frontend.Caddy .Frontend.Caddy.TLS }}tls {{ .Frontend.Caddy.TLS }}{{ else }}tls support@example.com{{ end }}
 }

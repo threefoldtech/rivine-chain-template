@@ -1,6 +1,6 @@
-# {{ .Blockchain.Name }} Blockchain
+# {{if .Blockchain.LongName }}{{.Blockchain.LongName}}{{else}}{{.Blockchain.Name}}{{end}} Blockchain
 
-The {{ .Blockchain.Name }} Blockchain repository.
+The {{if .Blockchain.LongName }}{{.Blockchain.LongName}}{{else}}{{.Blockchain.Name}}{{end}} Blockchain repository.
 
 ## How to use {{ .Blockchain.Binaries.Client }}
 {{$bc := .Blockchain}}{{ with index .Blockchain.Networks "devnet" }}

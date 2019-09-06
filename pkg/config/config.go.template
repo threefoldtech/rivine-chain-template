@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	rawVersion = "v0.1"
+	rawVersion = "{{if .Blockchain.Version}}{{.Blockchain.Version}}{{else}}v0.1{{end}}"
 	// Version of the chain binaries.
 	//
 	// Value is defined by a private build flag,

@@ -1,0 +1,14 @@
+{
+    "frontend": {
+        "explorer": {
+            "vuets": {
+                "repo": "https://github.com/threefoldtech/rivine-chain-explorer",
+                "branch": "master"
+            },
+            "plainjs": {
+                "repo": "https://github.com/threefoldtech/rivine-chain-explorer",
+                "branch": "plainjs"
+            }
+        }
+    }
+}

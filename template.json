@@ -9,6 +9,12 @@
                 "repo": "https://github.com/threefoldtech/rivine-chain-explorer",
                 "branch": "plainjs"
             }
+        },
+        "faucet": {
+            "go": {
+                "repo": "https://github.com/threefoldtech/rivine-faucet-template",
+                "branch": "master"
+            }
         }
     }
 }

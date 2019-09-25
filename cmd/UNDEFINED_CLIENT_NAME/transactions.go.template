@@ -13,14 +13,14 @@ import (
 	"github.com/threefoldtech/rivine/pkg/client"
 )
 {{ range $key, $network := .Blockchain.Networks }}
-func Register{{ title $key }}Transactions(cli *client.CommandLineClient) {
-	registerTransactions(cli)
+func Register{{ title $key }}Transactions(bc *client.BaseClient) {
+	registerTransactions(bc)
 }
 {{ end }}
 
-func registerTransactions(cli *client.CommandLineClient) {
+func registerTransactions(bc *client.BaseClient) {
 	{{if .Blockchain.Transactions.Minting}}{{if .Blockchain.Transactions.Minting.ConditionUpdate}}// create minting plugin client...
-	mintingCLI := mintingcli.NewPluginConsensusClient(cli)
+	mintingCLI := mintingcli.NewPluginConsensusClient(bc)
 	// ...and register minting types
 	types.RegisterTransactionVersion({{.Blockchain.Name}}types.TransactionVersionMinterDefinition, minting.MinterDefinitionTransactionController{
 		MintConditionGetter: mintingCLI,
@@ -35,7 +35,7 @@ func registerTransactions(cli *client.CommandLineClient) {
 	}){{end}}{{end}}
 
 	{{if .Blockchain.Transactions.Authcoin}}// create coin auth tx plugin client...
-	authCoinTxCLI := authcointxcli.NewPluginConsensusClient(cli)
+	authCoinTxCLI := authcointxcli.NewPluginConsensusClient(bc)
 	// ...and register coin auth tx types
 	types.RegisterTransactionVersion({{.Blockchain.Name}}types.TransactionVersionAuthConditionUpdate, authcointx.AuthConditionUpdateTransactionController{
 		AuthInfoGetter:     authCoinTxCLI,

@@ -135,7 +135,7 @@ func runDaemon(cfg ExtendedDaemonConfig, moduleIdentifiers daemon.ModuleIdentifi
 				}
 			}()
 
-			{{if .Blockchain.Transactions.Minting}}// register the minting extension plugin
+			{{if .Blockchain.Transactions.Minting}}// create the minting extension plugin
 			mintingPlugin = minting.NewMintingPlugin(
 				setupNetworkCfg.GenesisMintCondition,
 				{{.Blockchain.Name}}types.TransactionVersionMinterDefinition,
@@ -144,6 +144,22 @@ func runDaemon(cfg ExtendedDaemonConfig, moduleIdentifiers daemon.ModuleIdentifi
 					CoinDestructionTransactionVersion: {{.Blockchain.Name}}types.TransactionVersionCoinDestruction,
 				},{{end}}
 			)
+			// add the HTTP handlers for the auth coin tx extension as well
+			mintingapi.RegisterConsensusMintingHTTPHandlers(router, mintingPlugin){{end}}
+
+			{{if .Blockchain.Transactions.Authcoin}}
+			// create the auth coin tx plugin
+			// > NOTE: this also overwrites the standard tx controllers!!!!
+			authCoinTxPlugin = authcointx.NewPlugin(
+				setupNetworkCfg.GenesisAuthCondition,
+				{{.Blockchain.Name}}types.TransactionVersionAuthAddressUpdate,
+				{{.Blockchain.Name}}types.TransactionVersionAuthConditionUpdate,
+				nil, // no custom opts
+			)
+			// add the HTTP handlers for the auth coin tx extension as well
+			authcointxapi.RegisterConsensusAuthCoinHTTPHandlers(router, authCoinTxPlugin){{end}}
+			{{if .Blockchain.Transactions.Minting}}
+			// register the minting extension plugin
 			err = cs.RegisterPlugin(ctx, "minting", mintingPlugin)
 			if err != nil {
 				servErrs <- fmt.Errorf("failed to register the minting extension: %v", err)
@@ -153,19 +169,9 @@ func runDaemon(cfg ExtendedDaemonConfig, moduleIdentifiers daemon.ModuleIdentifi
 				}
 				cancel()
 				return
-			}
-			// add the HTTP handlers for the auth coin tx extension as well
-			mintingapi.RegisterConsensusMintingHTTPHandlers(router, mintingPlugin){{end}}
-
+			}{{end}}
 			{{if .Blockchain.Transactions.Authcoin}}
-			// register the auth coin tx plugin
-			// > NOTE: this also overwrites the standard tx controllers!!!!
-			authCoinTxPlugin = authcointx.NewPlugin(
-				setupNetworkCfg.GenesisAuthCondition,
-				{{.Blockchain.Name}}types.TransactionVersionAuthAddressUpdate,
-				{{.Blockchain.Name}}types.TransactionVersionAuthConditionUpdate,
-				nil, // no custom opts
-			)
+			// register the AuthCoin extension plugin
 			err = cs.RegisterPlugin(ctx, "authcointx", authCoinTxPlugin)
 			if err != nil {
 				servErrs <- fmt.Errorf("failed to register the auth coin tx extension: %v", err)
@@ -175,9 +181,7 @@ func runDaemon(cfg ExtendedDaemonConfig, moduleIdentifiers daemon.ModuleIdentifi
 				}
 				cancel()
 				return
-			}
-			// add the HTTP handlers for the auth coin tx extension as well
-			authcointxapi.RegisterConsensusAuthCoinHTTPHandlers(router, authCoinTxPlugin){{end}}
+			}{{end}}
 		}
 
 		var tpool modules.TransactionPool

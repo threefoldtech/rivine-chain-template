@@ -13,12 +13,12 @@ import (
 	"github.com/threefoldtech/rivine/pkg/client"
 )
 {{ range $key, $network := .Blockchain.Networks }}
-func Register{{ title $key }}Transactions(bc *client.BaseClient) {
+func Register{{ title $key }}Transactions(bc client.BaseClient) {
 	registerTransactions(bc)
 }
 {{ end }}
 
-func registerTransactions(bc *client.BaseClient) {
+func registerTransactions(bc client.BaseClient) {
 	{{if .Blockchain.Transactions.Minting}}{{if .Blockchain.Transactions.Minting.ConditionUpdate}}// create minting plugin client...
 	mintingCLI := mintingcli.NewPluginConsensusClient(bc)
 	// ...and register minting types

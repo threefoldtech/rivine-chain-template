@@ -22,25 +22,30 @@ func main() {
 	// create cli
 	bchainInfo := config.GetBlockchainInfo()
 	cliClient, err := NewCommandLineClient("http://localhost:{{.Blockchain.Ports.API}}", bchainInfo.Name, daemon.RivineUserAgent)
-	if err != nil {
-		panic(err)
-	}
+	exitIfError(err)
 
-	{{if .Blockchain.Transactions.Minting}}// register goldchain-specific explorer commands
-	mintingcli.CreateExploreCmd(cliClient.CommandLineClient)
-	mintingcli.CreateConsensusCmd(cliClient.CommandLineClient)
+	{{if .Blockchain.Transactions.Minting}}// register minting specific explorer commands
+	err = mintingcli.CreateConsensusCmd(cliClient.CommandLineClient)
+	exitIfError(err)
+	err = mintingcli.CreateExploreCmd(cliClient.CommandLineClient)
+	exitIfError(err)
 
 	// add cli wallet extension commands
-	mintingcli.CreateWalletCmds(
+	err = mintingcli.CreateWalletCmds(
 		cliClient.CommandLineClient,
 		types.TransactionVersionMinterDefinition,
 		types.TransactionVersionCoinCreation,
 		{{if .Blockchain.Transactions.Minting.CoinDestruction}}&mintingcli.WalletCmdsOpts{
 			CoinDestructionTxVersion: types.TransactionVersionCoinDestruction,
 		},{{else}}nil,{{end}}
-	){{end}}
+	)
+	exitIfError(err){{end}}
 
-	{{if .Blockchain.Transactions.Authcoin}}authcointxcli.CreateExploreAuthCoinInfoCmd(cliClient.CommandLineClient)
+	{{if .Blockchain.Transactions.Authcoin}}// register authcoin specific explorer commands
+	err = authcointxcli.CreateConsensusAuthCoinInfoCmd(cliClient.CommandLineClient)
+	exitIfError(err)
+	err = authcointxcli.CreateExploreAuthCoinInfoCmd(cliClient.CommandLineClient)
+	exitIfError(err)
 	authcointxcli.CreateWalletCmds(
 		cliClient.CommandLineClient,
 		types.TransactionVersionAuthConditionUpdate,
@@ -57,7 +62,7 @@ func main() {
 			cfg = &newCfg
 		}
 
-		bc, err := client.NewBaseClientFromCommandLineClient(cliClient.CommandLineClient)
+		bc, err := client.NewLazyBaseClientFromCommandLineClient(cliClient.CommandLineClient)
 		if err != nil {
 			return nil, err
 		}
@@ -85,4 +90,15 @@ func main() {
 		// Command.SilenceUsage is false) and we should exit with exitCodeUsage.
 		os.Exit(cli.ExitCodeUsage)
 	}
+}
+
+func exitIfError(err error) {
+	if err != nil {
+		exitWithError(err)
+	}
+}
+
+func exitWithError(err error) {
+	fmt.Fprintln(os.Stderr, "client exited during setup with an error:", err)
+	os.Exit(cli.ExitCodeGeneral)
 }

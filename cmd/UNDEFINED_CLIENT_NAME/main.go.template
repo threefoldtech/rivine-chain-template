@@ -24,7 +24,7 @@ func main() {
 	cliClient, err := NewCommandLineClient("http://localhost:{{.Blockchain.Ports.API}}", bchainInfo.Name, daemon.RivineUserAgent)
 	exitIfError(err)
 
-	{{if .Blockchain.Transactions.Minting}}// register minting specific explorer commands
+	{{if .Blockchain.Transactions.Minting}}// register minting specific commands
 	err = mintingcli.CreateConsensusCmd(cliClient.CommandLineClient)
 	exitIfError(err)
 	err = mintingcli.CreateExploreCmd(cliClient.CommandLineClient)
@@ -41,7 +41,7 @@ func main() {
 	)
 	exitIfError(err){{end}}
 
-	{{if .Blockchain.Transactions.Authcoin}}// register authcoin specific explorer commands
+	{{if .Blockchain.Transactions.Authcoin}}// register authcoin specific commands
 	err = authcointxcli.CreateConsensusAuthCoinInfoCmd(cliClient.CommandLineClient)
 	exitIfError(err)
 	err = authcointxcli.CreateExploreAuthCoinInfoCmd(cliClient.CommandLineClient)

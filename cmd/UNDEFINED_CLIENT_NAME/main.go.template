@@ -50,6 +50,9 @@ func main() {
 		cliClient.CommandLineClient,
 		types.TransactionVersionAuthConditionUpdate,
 		types.TransactionVersionAuthAddressUpdate,
+		&authcointxcli.WalletCmdsOpts{
+			RequireMinerFees: false, // require miner fees
+		},
 	){{end}}
 
 	// define preRun function
